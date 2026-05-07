@@ -73,6 +73,7 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
             margin-left: 260px;
             padding: 30px;
             min-height: 100vh;
+            transition: all 0.3s;
         }
         .top-navbar {
             background: #fff;
@@ -83,6 +84,22 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+        /* RESPONSIVE */
+        @media (max-width: 992px) {
+            .sidebar {
+                left: -260px;
+            }
+            .sidebar.active {
+                left: 0;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 15px;
+            }
+            .top-navbar {
+                padding: 10px 15px;
+            }
         }
         /* CARDS */
         .stat-card {
@@ -118,9 +135,10 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
 <body>
 
 <!-- SIDEBAR -->
-<div class="sidebar">
-    <div class="sidebar-header">
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header d-flex justify-content-between align-items-center">
         <h4 class="fw-bold text-primary mb-0"><i class="fas fa-store me-2"></i>Admin Panel</h4>
+        <button class="btn d-lg-none" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
     </div>
     <div class="nav-list">
         <a href="dashboard-admin.php?page=dashboard" class="nav-item <?= $page == 'dashboard' ? 'active' : '' ?>">
@@ -134,6 +152,7 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
         </a>
         <a href="dashboard-admin.php?page=pelanggan" class="nav-item <?= $page == 'pelanggan' ? 'active' : '' ?>">
             <i class="fas fa-users"></i> Pelanggan
+        </a>
         <div class="mt-4 pt-4 border-top">
             <a href="logout.php" class="nav-item text-danger">
                 <i class="fas fa-sign-out-alt"></i> Logout
@@ -147,9 +166,14 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
     
     <!-- TOP NAVBAR -->
     <div class="top-navbar">
-        <h5 class="fw-bold mb-0"><?= ucfirst($page) ?> Overview</h5>
         <div class="d-flex align-items-center">
-            <div class="text-end me-3">
+            <button class="btn btn-primary btn-sm rounded-circle me-3 d-lg-none" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h5 class="fw-bold mb-0 d-none d-sm-block"><?= ucfirst($page) ?> Overview</h5>
+        </div>
+        <div class="d-flex align-items-center">
+            <div class="text-end me-3 d-none d-sm-block">
                 <small class="text-muted d-block">Selamat datang,</small>
                 <span class="fw-bold"><?= $_SESSION['nama_user'] ?></span>
             </div>
@@ -159,10 +183,10 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
 
     <?php if($page == 'dashboard'): ?>
         <!-- DASHBOARD STATS -->
-        <div class="row g-4 mb-4">
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between">
+        <div class="row g-3 g-md-4 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="stat-card h-100">
+                    <div class="d-flex justify-content-between flex-column flex-xl-row">
                         <div>
                             <p class="text-muted mb-1 small">Total Produk</p>
                             <h3 class="fw-bold mb-0">
@@ -172,15 +196,15 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
                                 ?>
                             </h3>
                         </div>
-                        <div class="icon-box bg-primary text-white">
+                        <div class="icon-box bg-primary text-white mt-2 mt-xl-0">
                             <i class="fas fa-box"></i>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between">
+            <div class="col-6 col-md-3">
+                <div class="stat-card h-100">
+                    <div class="d-flex justify-content-between flex-column flex-xl-row">
                         <div>
                             <p class="text-muted mb-1 small">Pesanan Baru</p>
                             <h3 class="fw-bold mb-0">
@@ -199,15 +223,15 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
                                 ?>
                             </h3>
                         </div>
-                        <div class="icon-box bg-warning text-white">
+                        <div class="icon-box bg-warning text-white mt-2 mt-xl-0">
                             <i class="fas fa-shopping-cart"></i>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between">
+            <div class="col-6 col-md-3">
+                <div class="stat-card h-100">
+                    <div class="d-flex justify-content-between flex-column flex-xl-row">
                         <div>
                             <p class="text-muted mb-1 small">Total Pelanggan</p>
                             <h3 class="fw-bold mb-0">
@@ -217,17 +241,17 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
                                 ?>
                             </h3>
                         </div>
-                        <div class="icon-box bg-success text-white">
+                        <div class="icon-box bg-success text-white mt-2 mt-xl-0">
                             <i class="fas fa-users"></i>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between">
+            <div class="col-6 col-md-3">
+                <div class="stat-card h-100">
+                    <div class="d-flex justify-content-between flex-column flex-xl-row">
                         <div>
-                            <p class="text-muted mb-1 small">Total Pendapatan</p>
+                            <p class="text-muted mb-1 small">Pendapatan</p>
                             <?php 
                                 $total_income = 0;
                                 $check_table_income = mysqli_query($conn, "SHOW TABLES LIKE 'pesanan'");
@@ -240,9 +264,9 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
                                     $total_income = $res_income['total'] ?? 0;
                                 }
                             ?>
-                            <h3 class="fw-bold mb-0">Rp <?= number_format($total_income, 0, ',', '.') ?></h3>
+                            <h3 class="fw-bold mb-0 small" style="font-size: 1.1rem;">Rp <?= number_format($total_income, 0, ',', '.') ?></h3>
                         </div>
-                        <div class="icon-box bg-info text-white">
+                        <div class="icon-box bg-info text-white mt-2 mt-xl-0">
                             <i class="fas fa-wallet"></i>
                         </div>
                     </div>
@@ -250,6 +274,7 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
             </div>
         </div>
     <?php endif; ?>
+
 
     <?php if($page == 'produk'): ?>
         <div class="card card-table shadow-sm">
@@ -447,6 +472,11 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
 
 </div>
 
+<script>
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('active');
+    }
+</script>
 <script src="assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

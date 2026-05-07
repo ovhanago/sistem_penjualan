@@ -39,9 +39,24 @@ for($i=1; $i<=12; $i++){
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --primary: #6610f2; --secondary: #6f42c1; --bg: #f4f7f6; }
-        body { background-color: var(--bg); font-family: 'Segoe UI', sans-serif; }
-        .sidebar { width: 260px; height: 100vh; background: #fff; position: fixed; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
-        .main-content { margin-left: 260px; padding: 30px; }
+        body { background-color: var(--bg); font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+        .sidebar { 
+            width: 260px; 
+            height: 100vh; 
+            background: #fff; 
+            position: fixed; 
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05); 
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        .main-content { margin-left: 260px; padding: 30px; transition: all 0.3s; }
+        
+        @media (max-width: 992px) {
+            .sidebar { left: -260px; }
+            .sidebar.active { left: 0; }
+            .main-content { margin-left: 0; padding: 15px; }
+        }
+
         .card-stat { border: none; border-radius: 15px; transition: transform 0.3s; overflow: hidden; }
         .card-stat:hover { transform: translateY(-5px); }
         .icon-box { width: 45px; height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
@@ -52,10 +67,13 @@ for($i=1; $i<=12; $i++){
 </head>
 <body>
 
-<div class="sidebar d-flex flex-column p-4">
-    <div class="mb-5 text-center">
-        <h4 class="fw-bold text-primary"><i class="fas fa-crown me-2"></i>OWNER</h4>
-        <small class="text-muted text-uppercase letter-spacing-1">Laporan Bussines</small>
+<div class="sidebar d-flex flex-column p-4" id="sidebar">
+    <div class="mb-5 text-center d-flex justify-content-between align-items-center">
+        <div>
+            <h4 class="fw-bold text-primary mb-0"><i class="fas fa-crown me-2"></i>OWNER</h4>
+            <small class="text-muted text-uppercase letter-spacing-1">Laporan Bussines</small>
+        </div>
+        <button class="btn d-lg-none" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
     </div>
     
     <nav class="nav flex-column">
@@ -69,9 +87,14 @@ for($i=1; $i<=12; $i++){
 
 <div class="main-content">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h3 class="fw-bold mb-0">Selamat Datang, <?= $_SESSION['nama_user'] ?>!</h3>
-            <p class="text-muted small">Berikut adalah Laporan Toko Pakaian Adat hari ini.</p>
+        <div class="d-flex align-items-center">
+            <button class="btn btn-primary btn-sm rounded-circle me-3 d-lg-none" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div>
+                <h3 class="fw-bold mb-0">Selamat Datang, <?= $_SESSION['nama_user'] ?>!</h3>
+                <p class="text-muted small d-none d-sm-block">Berikut adalah Laporan Toko Pakaian Adat hari ini.</p>
+            </div>
         </div>
         <div class="text-end">
             <span class="badge bg-white text-dark shadow-sm p-2 rounded-pill px-3">
@@ -82,16 +105,16 @@ for($i=1; $i<=12; $i++){
 
     <div class="row g-4">
         <!-- Grafik Penjualan -->
-        <div class="col-md-8">
-            <div class="card border-0 shadow-sm p-4 rounded-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm p-3 p-md-4 rounded-4">
                 <h5 class="fw-bold mb-4">Grafik Pendapatan Tahun <?= date('Y') ?></h5>
                 <canvas id="salesChart" height="150"></canvas>
             </div>
         </div>
         
         <!-- Pesanan Terbaru -->
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm p-4 rounded-4">
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm p-3 p-md-4 rounded-4">
                 <h5 class="fw-bold mb-4">Transaksi Terakhir</h5>
                 <div class="table-responsive">
                     <table class="table table-borderless align-middle">
@@ -123,6 +146,10 @@ for($i=1; $i<=12; $i++){
 </div>
 
 <script>
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('active');
+    }
+
     const ctx = document.getElementById('salesChart').getContext('2d');
     new Chart(ctx, {
         type: 'line',

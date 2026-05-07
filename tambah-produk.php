@@ -44,11 +44,14 @@ if(isset($_POST['simpan'])){
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-<link href="assets/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Produk</title>
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="container mt-4">
+<body class="container mt-4 mb-5">
 
 <h3>Tambah Produk</h3>
 

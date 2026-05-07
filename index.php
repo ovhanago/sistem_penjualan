@@ -6,6 +6,8 @@ require_once "config/koneksi.php";
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Toko Pakaian Adat Bajawa - Koleksi Nusantara</title>
     <link href="assets/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -17,6 +19,12 @@ require_once "config/koneksi.php";
         .product-img { height: 250px; object-fit: cover; }
         .badge-category { position: absolute; top: 15px; left: 15px; background: rgba(13, 110, 253, 0.9); color: white; padding: 5px 15px; border-radius: 20px; font-size: 12px; }
         .hero-section { background: linear-gradient(rgba(13, 110, 253, 0.5), rgba(13, 110, 253, 0.5)), url('https://sultansinindonesieblog.wordpress.com/wp-content/uploads/2021/12/1-ng.jpg'); background-size: cover; background-position: center; color: white; padding: 100px 0; margin-bottom: 50px; border-radius: 0 0 50px 50px; }
+        @media (max-width: 768px) {
+            .hero-section { padding: 60px 0; border-radius: 0 0 30px 30px; }
+            .hero-section h1 { font-size: 2rem; }
+            .navbar-brand { font-size: 1.2rem !important; }
+            .product-img { height: 180px; }
+        }
     </style>
 </head>
 <body>
