@@ -1,9 +1,20 @@
 <?php 
+// 1. Tentukan nama session berdasarkan role yang sedang diakses atau di-input
+if(isset($_POST['role'])){
+    session_name("SESS_" . strtoupper($_POST['role']));
+} elseif(isset($_GET['role'])){
+    session_name("SESS_" . strtoupper($_GET['role']));
+}
+
 session_start(); 
 require_once "config/koneksi.php"; 
 
-if(isset($_SESSION['id_user'])){
-    if($_SESSION['role_user'] == 'admin') header("Location: dashboard-admin.php");
+// 2. Jika sudah login dengan role tertentu, arahkan ke dashboard yang sesuai
+if(isset($_SESSION['id_user']) && isset($_SESSION['role_user'])){
+    $role = $_SESSION['role_user'];
+    if($role == "admin") header("Location: dashboard-admin.php");
+    elseif($role == "pemilik") header("Location: dashboard-pemilik.php");
+    elseif($role == "pengirim") header("Location: dashboard-pengirim.php");
     else header("Location: dashboard-pelanggan.php");
     exit;
 }
