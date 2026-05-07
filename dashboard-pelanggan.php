@@ -22,154 +22,158 @@ $pesanan_selesai = mysqli_num_rows(mysqli_query($conn, "SELECT id_pesanan FROM p
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Pelanggan - Toko Adat</title>
+    <title>Dashboard Saya - Bajawa Adat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <link href="assets/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
-        .card { border: none; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .navbar { box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        :root {
+            --accent-color: #0d6efd;
+            --bg-light: #fcfcfc;
+        }
+        body { background-color: var(--bg-light); font-family: 'Inter', sans-serif; }
         
-        .welcome-banner {
-            background: linear-gradient(45deg, #0d6efd, #0dcaf0);
+        .navbar { 
+            background: white !important; 
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05); 
+            padding: 15px 0;
+        }
+        .navbar-brand { font-family: 'Playfair Display', serif; font-weight: 700; color: #1a1a1a !important; }
+
+        .dashboard-header {
+            padding: 60px 0 40px;
+        }
+        .welcome-card {
+            background: #1a1a1a;
             color: white;
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
+            border-radius: 30px;
+            padding: 40px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
-        .stat-card {
-            transition: transform 0.3s;
-            border-left: 5px solid #0d6efd;
-        }
-        .stat-card:hover { transform: translateY(-5px); }
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            background: rgba(13, 110, 253, 0.1);
-            color: #0d6efd;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
+        .welcome-card::after {
+            content: '\f008';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: -30px;
+            bottom: -30px;
+            font-size: 200px;
+            opacity: 0.05;
         }
 
+        .stat-card {
+            background: white;
+            border: 1px solid rgba(0,0,0,0.05);
+            border-radius: 24px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.05); }
+        .stat-icon {
+            width: 50px; height: 50px;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid rgba(0,0,0,0.05);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+        }
+        .table thead th {
+            background: #f8f9fa;
+            border: none;
+            padding: 20px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #6c757d;
+        }
+        .table td { padding: 20px; border-bottom: 1px solid #f8f9fa; vertical-align: middle; }
+
         @media (max-width: 768px) {
-            .navbar-brand { font-size: 1.1rem !important; }
-            .welcome-banner { padding: 20px; }
-            .welcome-banner h3 { font-size: 1.4rem; }
+            .dashboard-header { padding: 30px 0; }
+            .welcome-card { padding: 30px 20px; border-radius: 20px; }
+            .stat-card { border-radius: 18px; padding: 20px; }
         }
     </style>
 </head>
 <body>
 
-<!-- NAVBAR (Sama dengan PC) -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="index.php">
-            <i class="fas fa-store me-2"></i>Toko Pakaian Adat
+<nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container text-center text-lg-start">
+        <a class="navbar-brand mx-auto ms-lg-0" href="index.php">
+            Bajawa<span class="text-primary">Adat</span>
         </a>
-        
-        <button class="navbar-toggler shadow-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto align-items-center">
-                <li class="nav-item">
-                    <a href="index.php" class="nav-link text-white me-lg-3"><i class="fas fa-home me-1"></i> Beranda</a>
-                </li>
-                <li class="nav-item">
-                    <a href="keranjang.php" class="nav-link text-white me-lg-3"><i class="fas fa-shopping-cart me-1"></i> Keranjang</a>
-                </li>
-                <li class="nav-item dropdown mt-3 mt-lg-0 w-100 text-center text-lg-start">
-                    <a class="btn btn-light btn-sm rounded-pill px-3 dropdown-toggle w-100" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user-circle me-1"></i> <?= $nama_user ?>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow mt-2">
-                        <li><a class="dropdown-item text-danger" href="logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-                    </ul>
-                </li>
-            </ul>
+        <div class="ms-auto d-none d-lg-block">
+            <a href="index.php" class="btn btn-outline-dark rounded-pill px-4 me-2">Kembali Belanja</a>
+            <a href="logout.php" class="btn btn-danger rounded-pill px-4 shadow-sm">Logout</a>
         </div>
     </div>
 </nav>
 
-<div class="container mt-4 mb-5">
-    <!-- Banner Selamat Datang -->
-    <div class="welcome-banner shadow-sm">
-        <div class="row align-items-center">
-            <div class="col-12 col-md-8">
-                <h3 class="fw-bold mb-1">Halo, <?= $nama_user ?>! 👋</h3>
-                <p class="mb-0 opacity-75">Pantau status pesanan pakaian adat Anda di sini.</p>
-            </div>
-            <div class="col-md-4 text-end d-none d-md-block">
-                <i class="fas fa-user-shield fa-4x opacity-25"></i>
-            </div>
+<div class="container">
+    <div class="dashboard-header">
+        <div class="welcome-card">
+            <h2 class="fw-bold mb-2" style="font-family: 'Playfair Display', serif;">Selamat Datang, <?= $nama_user ?></h2>
+            <p class="opacity-75 mb-0">Ini adalah ringkasan aktivitas belanja Anda di Toko Adat Bajawa.</p>
         </div>
-    </div>
 
-    <!-- Baris Statistik -->
-    <div class="row mb-4">
-        <div class="col-4 col-md-4 mb-3">
-            <div class="card stat-card shadow-sm h-100">
-                <div class="card-body d-flex flex-column flex-md-row align-items-center text-center text-md-start">
-                    <div class="stat-icon mb-2 mb-md-0 me-md-3">
-                        <i class="fas fa-box"></i>
+        <div class="row g-4 mb-5">
+            <div class="col-4 col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                        <i class="fas fa-shopping-bag"></i>
                     </div>
-                    <div>
-                        <h6 class="text-muted mb-1 small text-uppercase fw-bold d-none d-md-block">Total</h6>
-                        <h4 class="mb-0 fw-bold"><?= $total_pesanan ?></h4>
-                        <span class="d-md-none small text-muted">Total</span>
-                    </div>
+                    <div class="small text-muted mb-1 text-uppercase fw-bold d-none d-md-block" style="letter-spacing: 1px;">Total Pesanan</div>
+                    <h3 class="fw-bold mb-0"><?= $total_pesanan ?></h3>
+                    <div class="d-md-none small text-muted">Pesanan</div>
                 </div>
             </div>
-        </div>
-        <div class="col-4 col-md-4 mb-3">
-            <div class="card stat-card shadow-sm h-100" style="border-left-color: #ffc107;">
-                <div class="card-body d-flex flex-column flex-md-row align-items-center text-center text-md-start">
-                    <div class="stat-icon mb-2 mb-md-0 me-md-3" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">
-                        <i class="fas fa-spinner"></i>
+            <div class="col-4 col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                        <i class="fas fa-clock"></i>
                     </div>
-                    <div>
-                        <h6 class="text-muted mb-1 small text-uppercase fw-bold d-none d-md-block">Proses</h6>
-                        <h4 class="mb-0 fw-bold"><?= $pesanan_proses ?></h4>
-                        <span class="d-md-none small text-muted">Proses</span>
-                    </div>
+                    <div class="small text-muted mb-1 text-uppercase fw-bold d-none d-md-block" style="letter-spacing: 1px;">Dalam Proses</div>
+                    <h3 class="fw-bold mb-0"><?= $pesanan_proses ?></h3>
+                    <div class="d-md-none small text-muted">Proses</div>
                 </div>
             </div>
-        </div>
-        <div class="col-4 col-md-4 mb-3">
-            <div class="card stat-card shadow-sm h-100" style="border-left-color: #198754;">
-                <div class="card-body d-flex flex-column flex-md-row align-items-center text-center text-md-start">
-                    <div class="stat-icon mb-2 mb-md-0 me-md-3" style="background: rgba(25, 135, 84, 0.1); color: #198754;">
+            <div class="col-4 col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon bg-success bg-opacity-10 text-success">
                         <i class="fas fa-check-double"></i>
                     </div>
-                    <div>
-                        <h6 class="text-muted mb-1 small text-uppercase fw-bold d-none d-md-block">Selesai</h6>
-                        <h4 class="mb-0 fw-bold"><?= $pesanan_selesai ?></h4>
-                        <span class="d-md-none small text-muted">Selesai</span>
-                    </div>
+                    <div class="small text-muted mb-1 text-uppercase fw-bold d-none d-md-block" style="letter-spacing: 1px;">Selesai</div>
+                    <h3 class="fw-bold mb-0"><?= $pesanan_selesai ?></h3>
+                    <div class="d-md-none small text-muted">Selesai</div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Tabel Pesanan (Tetap gunakan tabel agar sama dengan PC) -->
-    <div class="card shadow-sm overflow-hidden">
-        <div class="card-header bg-white py-3 border-0">
-            <h5 class="mb-0 fw-bold text-primary"><i class="fas fa-receipt me-2"></i>Riwayat Pesanan</h5>
-        </div>
-        <div class="card-body p-0">
+        <div class="table-card">
+            <div class="p-4 border-bottom d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0">Riwayat Transaksi</h5>
+                <a href="index.php" class="btn btn-primary btn-sm rounded-pill px-3 d-lg-none">Belanja Lagi</a>
+            </div>
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light text-muted small text-uppercase">
+                <table class="table align-middle mb-0">
+                    <thead>
                         <tr>
-                            <th class="ps-4">No. Pesanan</th>
+                            <th>No. Order</th>
                             <th>Tanggal</th>
                             <th>Total Tagihan</th>
                             <th>Status</th>
-                            <th class="pe-4 text-center">Aksi</th>
+                            <th class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -184,24 +188,28 @@ $pesanan_selesai = mysqli_num_rows(mysqli_query($conn, "SELECT id_pesanan FROM p
                                 if($status == 'Dibatalkan' || $status == 'Batal') $badge = 'bg-danger text-white';
                         ?>
                         <tr>
-                            <td class="ps-4 fw-bold">#ORD-<?= $r['id_pesanan'] ?></td>
-                            <td class="small"><?= date('d/m/Y', strtotime($r['tanggal_pesanan'])) ?></td>
-                            <td class="fw-bold text-primary small">Rp <?= number_format($r['total_harga'], 0, ',', '.') ?></td>
-                            <td><span class="badge rounded-pill <?= $badge ?>" style="font-size: 10px;"><?= $r['status_pesanan'] ?></span></td>
-                            <td class="pe-4 text-center">
-                                <a href="pesanan-detail.php?id=<?= $r['id_pesanan'] ?>" class="btn btn-primary btn-sm rounded-pill shadow-sm">
-                                    <i class="fas fa-eye d-md-none"></i><span class="d-none d-md-inline">Detail</span>
+                            <td class="fw-bold">#ORD-<?= $r['id_pesanan'] ?></td>
+                            <td class="small text-muted"><?= date('d M Y', strtotime($r['tanggal_pesanan'])) ?></td>
+                            <td class="fw-bold text-primary">Rp <?= number_format($r['total_harga'], 0, ',', '.') ?></td>
+                            <td><span class="badge rounded-pill <?= $badge ?> px-3 py-2" style="font-size: 0.7rem;"><?= $r['status_pesanan'] ?></span></td>
+                            <td class="text-center">
+                                <a href="pesanan-detail.php?id=<?= $r['id_pesanan'] ?>" class="btn btn-outline-dark btn-sm rounded-pill px-3">
+                                    Detail
                                 </a>
                             </td>
                         </tr>
                         <?php endwhile; else: ?>
-                        <tr><td colspan="5" class="text-center py-5 text-muted">Belum ada pesanan</td></tr>
+                        <tr><td colspan="5" class="text-center py-5 text-muted">Belum ada transaksi</td></tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+</div>
+
+<div class="d-lg-none p-4 text-center">
+    <a href="logout.php" class="btn btn-danger rounded-pill w-100 py-3 shadow">Logout</a>
 </div>
 
 <script src="assets/js/bootstrap.bundle.min.js"></script>
