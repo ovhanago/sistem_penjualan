@@ -1,5 +1,4 @@
 <?php
-session_name("SESS_PELANGGAN");
 session_start();
 require_once "config/koneksi.php";
 

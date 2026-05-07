@@ -1,5 +1,4 @@
 <?php
-session_name("SESS_PENGIRIM");
 session_start();
 require_once "config/koneksi.php";
 
@@ -35,24 +34,9 @@ $count_selesai = mysqli_num_rows(mysqli_query($conn, "SELECT id_pesanan FROM pes
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --primary: #0d6efd; --bg: #f4f7f6; }
-        body { background-color: var(--bg); font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
-        .sidebar { 
-            width: 260px; 
-            height: 100vh; 
-            background: #fff; 
-            position: fixed; 
-            box-shadow: 2px 0 10px rgba(0,0,0,0.05); 
-            z-index: 1000;
-            transition: all 0.3s;
-        }
-        .main-content { margin-left: 260px; padding: 30px; transition: all 0.3s; }
-        
-        @media (max-width: 992px) {
-            .sidebar { left: -260px; }
-            .sidebar.active { left: 0; }
-            .main-content { margin-left: 0; padding: 15px; }
-        }
-
+        body { background-color: var(--bg); font-family: 'Segoe UI', sans-serif; }
+        .sidebar { width: 260px; height: 100vh; background: #fff; position: fixed; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
+        .main-content { margin-left: 260px; padding: 30px; }
         .card-custom { border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
         .nav-link { color: #6c757d; font-weight: 500; padding: 12px 20px; border-radius: 10px; margin-bottom: 5px; }
         .nav-link.active { background: var(--primary); color: #fff !important; }
@@ -61,13 +45,10 @@ $count_selesai = mysqli_num_rows(mysqli_query($conn, "SELECT id_pesanan FROM pes
 </head>
 <body>
 
-<div class="sidebar d-flex flex-column p-4" id="sidebar">
-    <div class="mb-5 text-center d-flex justify-content-between align-items-center">
-        <div>
-            <h4 class="fw-bold text-primary mb-0"><i class="fas fa-truck me-2"></i>KURIR</h4>
-            <small class="text-muted text-uppercase">Delivery Management</small>
-        </div>
-        <button class="btn d-lg-none" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
+<div class="sidebar d-flex flex-column p-4">
+    <div class="mb-5 text-center">
+        <h4 class="fw-bold text-primary"><i class="fas fa-truck me-2"></i>KURIR</h4>
+        <small class="text-muted text-uppercase">Delivery Management</small>
     </div>
     
     <nav class="nav flex-column">
@@ -78,14 +59,9 @@ $count_selesai = mysqli_num_rows(mysqli_query($conn, "SELECT id_pesanan FROM pes
 
 <div class="main-content">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <div class="d-flex align-items-center">
-            <button class="btn btn-primary btn-sm rounded-circle me-3 d-lg-none" onclick="toggleSidebar()">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div>
-                <h3 class="fw-bold mb-0">Halo, <?= $_SESSION['nama_user'] ?>!</h3>
-                <p class="text-muted small d-none d-sm-block">Kelola pengiriman paket pelanggan hari ini.</p>
-            </div>
+        <div>
+            <h3 class="fw-bold mb-0">Halo, <?= $_SESSION['nama_user'] ?>!</h3>
+            <p class="text-muted small">Kelola pengiriman paket pelanggan hari ini.</p>
         </div>
         <div class="text-end">
             <span class="badge bg-white text-dark shadow-sm p-2 rounded-pill px-3">
@@ -93,7 +69,6 @@ $count_selesai = mysqli_num_rows(mysqli_query($conn, "SELECT id_pesanan FROM pes
             </span>
         </div>
     </div>
-
 
     <!-- Statistik Singkat -->
     <div class="row g-4 mb-4">
@@ -207,11 +182,6 @@ $count_selesai = mysqli_num_rows(mysqli_query($conn, "SELECT id_pesanan FROM pes
     </div>
 </div>
 
-<script>
-    function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('active');
-    }
-</script>
 <script src="assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

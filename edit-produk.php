@@ -1,16 +1,7 @@
 <?php
-// Tambahan agar mendukung multi-session
-session_name("SESS_ADMIN");
-session_start();
 require_once "config/koneksi.php";
 
-// Proteksi: Harus login sebagai admin
-if(!isset($_SESSION['id_user']) || $_SESSION['role_user'] != 'admin'){
-    header("Location: login.php");
-    exit;
-}
-
-$id = mysqli_real_escape_string($conn, $_GET['id']);
+$id = $_GET['id'];
 $data = mysqli_query($conn, "SELECT * FROM produk WHERE id_produk='$id'");
 $row = mysqli_fetch_assoc($data);
 
@@ -19,7 +10,7 @@ if(isset($_POST['update'])){
     $nama   = mysqli_real_escape_string($conn, $_POST['nama']);
     $jumlah = mysqli_real_escape_string($conn, $_POST['jumlah']);
     $harga  = mysqli_real_escape_string($conn, $_POST['harga']);
-    $status = mysqli_real_escape_string($conn, $_POST['status']); 
+    $status = mysqli_real_escape_string($conn, $_POST['status']);
 
     $gambarLama = $row['gambar_produk'];
     $gambarBaru = $gambarLama;
@@ -59,7 +50,7 @@ if(isset($_POST['update'])){
         gambar_produk='$gambarBaru'
         WHERE id_produk='$id'");
 
-    header("Location: dashboard-admin.php?page=produk");
+    header("Location: dashboard-admin.php");
     exit;
 }
 ?>
@@ -67,8 +58,7 @@ if(isset($_POST['update'])){
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Edit Produk</title>
-    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+<link href="assets/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="container mt-4">
 
@@ -89,14 +79,6 @@ if(isset($_POST['update'])){
     <div class="mb-2">
         <label>Harga</label>
         <input type="number" name="harga" value="<?= $row['harga_produk']; ?>" class="form-control" required>
-    </div>
-
-    <div class="mb-2">
-        <label>Status</label>
-        <select name="status" class="form-control" required>
-            <option value="Tersedia" <?= ($row['status'] == 'Tersedia') ? 'selected' : ''; ?>>Tersedia</option>
-            <option value="Habis" <?= ($row['status'] == 'Habis') ? 'selected' : ''; ?>>Habis</option>
-        </select>
     </div>
 
     <div class="mb-2">
