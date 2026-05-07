@@ -78,7 +78,6 @@ require_once "config/koneksi.php";
 <!-- HERO -->
 <div class="hero-section text-center">
     <div class="container">
-        <h1 class="display-4 fw-bold mb-3"> Sistem informasi Penjualanan Pakaian Adat Bajawa NTT Berbasis Web</h1>
         <p class="lead mb-4">Temukan keindahan budaya Indonesia melalui berbagai pilihan pakaian adat terbaik.</p>
         <a href="#produk" class="btn btn-light btn-lg rounded-pill px-5 shadow text-primary fw-bold">Jelajahi Sekarang</a>
     </div>
