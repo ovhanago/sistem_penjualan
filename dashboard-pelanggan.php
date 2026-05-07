@@ -2,19 +2,12 @@
 session_start();
 require_once "config/koneksi.php";
 
-// Proteksi halaman Pelanggan
-if(!isset($_SESSION['id_user']) || $_SESSION['role_user'] != 'pelanggan'){
+if(!isset($_SESSION['id_user']) || $_SESSION['role_user'] != 'admin'){
     header("Location: login.php");
     exit;
 }
 
-$id_user = $_SESSION['id_user'];
-$nama_user = $_SESSION['nama_user'] ?? 'Pelanggan';
-
-// Statistik Pesanan
-$total_pesanan = mysqli_num_rows(mysqli_query($conn, "SELECT id_pesanan FROM pesanan WHERE id_user = '$id_user'"));
-$pesanan_proses = mysqli_num_rows(mysqli_query($conn, "SELECT id_pesanan FROM pesanan WHERE id_user = '$id_user' AND status_pesanan NOT IN ('Selesai', 'Dibatalkan', 'Batal')"));
-$pesanan_selesai = mysqli_num_rows(mysqli_query($conn, "SELECT id_pesanan FROM pesanan WHERE id_user = '$id_user' AND status_pesanan = 'Selesai'"));
+$page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
 ?>
 
 <!DOCTYPE html>
@@ -22,188 +15,436 @@ $pesanan_selesai = mysqli_num_rows(mysqli_query($conn, "SELECT id_pesanan FROM p
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pesanan Saya - Toko Adat</title>
+    <title>Admin Panel - Toko Adat</title>
     <link href="assets/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .card { border: none; border-radius: 15px; }
-        .navbar { box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
-        .table thead { background-color: #f1f3f5; }
-        .btn-action { width: 35px; height: 35px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; }
-        
-        .welcome-banner {
-            background: linear-gradient(45deg, #0d6efd, #0dcaf0);
-            color: white;
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 15px rgba(13, 110, 253, 0.2);
+        :root {
+            --primary-color: #0d6efd;
+            --sidebar-bg: #ffffff;
+            --main-bg: #f8f9fa;
         }
+        body {
+            background-color: var(--main-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+        /* SIDEBAR */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            background: var(--sidebar-bg);
+            position: fixed;
+            left: 0;
+            top: 0;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.03);
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        .sidebar-header {
+            padding: 30px 25px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+        .nav-list {
+            padding: 20px 15px;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: #6c757d;
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 5px;
+            transition: all 0.2s;
+        }
+        .nav-item i {
+            width: 25px;
+            font-size: 18px;
+            margin-right: 12px;
+        }
+        .nav-item:hover, .nav-item.active {
+            background-color: rgba(13, 110, 253, 0.1);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 260px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+        .top-navbar {
+            background: #fff;
+            padding: 15px 30px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        /* CARDS */
         .stat-card {
+            border: none;
+            border-radius: 20px;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
             transition: transform 0.3s;
-            border-left: 5px solid #0d6efd;
         }
         .stat-card:hover { transform: translateY(-5px); }
-        .stat-icon {
+        .icon-box {
             width: 50px;
             height: 50px;
-            background: rgba(13, 110, 253, 0.1);
-            color: #0d6efd;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
         }
-        @media (max-width: 768px) {
-            .navbar-brand { font-size: 1.1rem !important; }
-            .stat-icon { width: 40px; height: 40px; font-size: 18px; }
-            .welcome-banner h3 { font-size: 1.4rem; }
+        /* TABLE */
+        .card-table {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            overflow: hidden;
         }
+        .table thead { background-color: #f8f9fa; }
+        .table th { border: none; padding: 15px; font-weight: 600; font-size: 14px; color: #6c757d; }
+        .table td { padding: 15px; border-bottom: 1px solid #f8f9fa; vertical-align: middle; }
     </style>
 </head>
 <body>
 
-<!-- NAVBAR (Original Blue Style) -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="index.php">
-            <i class="fas fa-store me-2"></i>Toko Pakaian Adat
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div class="sidebar-header">
+        <h4 class="fw-bold text-primary mb-0"><i class="fas fa-store me-2"></i>Admin Panel</h4>
+    </div>
+    <div class="nav-list">
+        <a href="dashboard-admin.php?page=dashboard" class="nav-item <?= $page == 'dashboard' ? 'active' : '' ?>">
+            <i class="fas fa-home"></i> Dashboard
         </a>
-        
-        <button class="navbar-toggler shadow-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto align-items-center">
-                <li class="nav-item">
-                    <a href="index.php" class="nav-link text-white me-lg-3"><i class="fas fa-shopping-bag me-1"></i> Belanja</a>
-                </li>
-                <li class="nav-item">
-                    <a href="keranjang.php" class="nav-link text-white me-lg-3"><i class="fas fa-shopping-cart me-1"></i> Keranjang</a>
-                </li>
-                <li class="nav-item dropdown mt-2 mt-lg-0 w-100 text-center text-lg-start">
-                    <a class="btn btn-light btn-sm rounded-pill px-3 dropdown-toggle w-100" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user-circle me-1 text-primary"></i> <?= $_SESSION['nama_user'] ?>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow mt-2">
-                        <li><a class="dropdown-item text-danger" href="logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-                    </ul>
-                </li>
-            </ul>
+        <a href="dashboard-admin.php?page=produk" class="nav-item <?= $page == 'produk' ? 'active' : '' ?>">
+            <i class="fas fa-box"></i> Data Produk
+        </a>
+        <a href="dashboard-admin.php?page=pesanan" class="nav-item <?= $page == 'pesanan' ? 'active' : '' ?>">
+            <i class="fas fa-shopping-bag"></i> Pesanan
+        </a>
+        <a href="dashboard-admin.php?page=pelanggan" class="nav-item <?= $page == 'pelanggan' ? 'active' : '' ?>">
+            <i class="fas fa-users"></i> Pelanggan
+        <div class="mt-4 pt-4 border-top">
+            <a href="logout.php" class="nav-item text-danger">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
         </div>
     </div>
-</nav>
+</div>
 
-<div class="container mt-4 mb-5">
-    <!-- Banner Selamat Datang -->
-    <div class="welcome-banner">
-        <div class="row align-items-center">
-            <div class="col-md-8">
-                <h3 class="fw-bold mb-1">Halo, <?= $nama_user ?>! 👋</h3>
-                <p class="mb-0 opacity-75">Pantau status pesanan pakaian adat Anda di sini.</p>
+<!-- MAIN CONTENT -->
+<div class="main-content">
+    
+    <!-- TOP NAVBAR -->
+    <div class="top-navbar">
+        <h5 class="fw-bold mb-0"><?= ucfirst($page) ?> Overview</h5>
+        <div class="d-flex align-items-center">
+            <div class="text-end me-3">
+                <small class="text-muted d-block">Selamat datang,</small>
+                <span class="fw-bold"><?= $_SESSION['nama_user'] ?></span>
             </div>
-            <div class="col-md-4 text-md-end d-none d-md-block">
-                <i class="fas fa-user-circle fa-4x opacity-25"></i>
-            </div>
+            <img src="https://ui-avatars.com/api/?name=<?= $_SESSION['nama_user'] ?>&background=0D6EFD&color=fff" class="rounded-circle" width="40">
         </div>
     </div>
 
-    <!-- Statistik -->
-    <div class="row mb-4">
-        <div class="col-4 col-md-4 mb-3">
-            <div class="card stat-card shadow-sm h-100">
-                <div class="card-body d-flex flex-column flex-md-row align-items-center">
-                    <div class="stat-icon mb-2 mb-md-0 me-md-3">
-                        <i class="fas fa-box"></i>
+    <?php if($page == 'dashboard'): ?>
+        <!-- DASHBOARD STATS -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1 small">Total Produk</p>
+                            <h3 class="fw-bold mb-0">
+                                <?php
+                                $q_total_produk = mysqli_query($conn, "SELECT id_produk FROM produk");
+                                echo $q_total_produk ? mysqli_num_rows($q_total_produk) : 0;
+                                ?>
+                            </h3>
+                        </div>
+                        <div class="icon-box bg-primary text-white">
+                            <i class="fas fa-box"></i>
+                        </div>
                     </div>
-                    <div>
-                        <h6 class="text-muted mb-1 small text-uppercase fw-bold d-none d-md-block">Total Pesanan</h6>
-                        <h4 class="mb-0 fw-bold"><?= $total_pesanan ?></h4>
-                        <span class="d-md-none small text-muted">Total</span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1 small">Pesanan Baru</p>
+                            <h3 class="fw-bold mb-0">
+                                <?php
+                                // Cek apakah tabel pesanan ada
+                                $check_table = mysqli_query($conn, "SHOW TABLES LIKE 'pesanan'");
+                                if(mysqli_num_rows($check_table) > 0) {
+                                    $q_pesanan_baru = mysqli_query($conn, "SELECT id_pesanan FROM pesanan WHERE status_pesanan = 'Pending'");
+                                    if(!$q_pesanan_baru) {
+                                        $q_pesanan_baru = mysqli_query($conn, "SELECT id_pesanan FROM pesanan WHERE status = 'Pending'");
+                                    }
+                                    echo $q_pesanan_baru ? mysqli_num_rows($q_pesanan_baru) : 0;
+                                } else {
+                                    echo "0";
+                                }
+                                ?>
+                            </h3>
+                        </div>
+                        <div class="icon-box bg-warning text-white">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1 small">Total Pelanggan</p>
+                            <h3 class="fw-bold mb-0">
+                                <?php
+                                $q_total_pelanggan = mysqli_query($conn, "SELECT id_user FROM user WHERE role_user = 'pelanggan'");
+                                echo $q_total_pelanggan ? mysqli_num_rows($q_total_pelanggan) : 0;
+                                ?>
+                            </h3>
+                        </div>
+                        <div class="icon-box bg-success text-white">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1 small">Total Pendapatan</p>
+                            <?php 
+                                $total_income = 0;
+                                $check_table_income = mysqli_query($conn, "SHOW TABLES LIKE 'pesanan'");
+                                if(mysqli_num_rows($check_table_income) > 0) {
+                                    $income_q = mysqli_query($conn, "SELECT SUM(total_harga) as total FROM pesanan WHERE status_pesanan != 'Dibatalkan'");
+                                    if(!$income_q) {
+                                        $income_q = mysqli_query($conn, "SELECT SUM(total_harga) as total FROM pesanan WHERE status != 'Dibatalkan'");
+                                    }
+                                    $res_income = $income_q ? mysqli_fetch_assoc($income_q) : null;
+                                    $total_income = $res_income['total'] ?? 0;
+                                }
+                            ?>
+                            <h3 class="fw-bold mb-0">Rp <?= number_format($total_income, 0, ',', '.') ?></h3>
+                        </div>
+                        <div class="icon-box bg-info text-white">
+                            <i class="fas fa-wallet"></i>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-4 col-md-4 mb-3">
-            <div class="card stat-card shadow-sm h-100" style="border-left-color: #ffc107;">
-                <div class="card-body d-flex flex-column flex-md-row align-items-center">
-                    <div class="stat-icon mb-2 mb-md-0 me-md-3" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">
-                        <i class="fas fa-spinner"></i>
-                    </div>
-                    <div>
-                        <h6 class="text-muted mb-1 small text-uppercase fw-bold d-none d-md-block">Dalam Proses</h6>
-                        <h4 class="mb-0 fw-bold"><?= $pesanan_proses ?></h4>
-                        <span class="d-md-none small text-muted">Proses</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-4 col-md-4 mb-3">
-            <div class="card stat-card shadow-sm h-100" style="border-left-color: #198754;">
-                <div class="card-body d-flex flex-column flex-md-row align-items-center">
-                    <div class="stat-icon mb-2 mb-md-0 me-md-3" style="background: rgba(25, 135, 84, 0.1); color: #198754;">
-                        <i class="fas fa-check-double"></i>
-                    </div>
-                    <div>
-                        <h6 class="text-muted mb-1 small text-uppercase fw-bold d-none d-md-block">Selesai</h6>
-                        <h4 class="mb-0 fw-bold"><?= $pesanan_selesai ?></h4>
-                        <span class="d-md-none small text-muted">Selesai</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <?php endif; ?>
 
-    <!-- Riwayat Pesanan -->
-    <div class="card shadow-sm overflow-hidden">
-        <div class="card-header bg-white py-3 border-0">
-            <h5 class="mb-0 fw-bold text-primary"><i class="fas fa-receipt me-2"></i>Riwayat Pesanan</h5>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light text-muted small text-uppercase">
-                        <tr>
-                            <th class="ps-4">No. Order</th>
-                            <th>Tanggal</th>
-                            <th>Tagihan</th>
-                            <th>Status</th>
-                            <th class="pe-4 text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php 
-                        $res = mysqli_query($conn, "SELECT * FROM pesanan WHERE id_user = '$id_user' ORDER BY tanggal_pesanan DESC");
-                        if(mysqli_num_rows($res) > 0):
-                            while($r = mysqli_fetch_assoc($res)):
-                                $badge = 'bg-warning text-dark';
-                                $status = $r['status_pesanan'];
-                                if($status == 'Dikirim') $badge = 'bg-info text-white';
-                                if($status == 'Selesai') $badge = 'bg-success text-white';
-                                if($status == 'Dibatalkan' || $status == 'Batal') $badge = 'bg-danger text-white';
-                        ?>
-                        <tr>
-                            <td class="ps-4 fw-bold small">#ORD-<?= $r['id_pesanan'] ?></td>
-                            <td class="small"><?= date('d/m/y', strtotime($r['tanggal_pesanan'])) ?></td>
-                            <td class="fw-bold text-primary small">Rp <?= number_format($r['total_harga'], 0, ',', '.') ?></td>
-                            <td><span class="badge rounded-pill <?= $badge ?>" style="font-size: 10px;"><?= $r['status_pesanan'] ?></span></td>
-                            <td class="pe-4 text-center">
-                                <a href="pesanan-detail.php?id=<?= $r['id_pesanan'] ?>" class="btn btn-light btn-sm rounded-circle text-primary shadow-sm btn-action">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        <?php endwhile; else: ?>
-                        <tr><td colspan="5" class="text-center py-5">Belum ada pesanan</td></tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+    <?php if($page == 'produk'): ?>
+        <div class="card card-table shadow-sm">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold">Manajemen Produk</h5>
+                <a href="tambah-produk.php" class="btn btn-primary btn-sm rounded-pill px-4 shadow-sm">
+                    <i class="fas fa-plus me-1"></i> Tambah Produk
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">No</th>
+                                <th>Info Produk</th>
+                                <th>Stok</th>
+                                <th>Harga</th>
+                                <th class="text-center pe-4">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php 
+                            $data_produk = mysqli_query($conn, "SELECT * FROM produk ORDER BY id_produk DESC");
+                            $no = 1;
+                            if(mysqli_num_rows($data_produk) > 0) :
+                                while($row = mysqli_fetch_assoc($data_produk)) : 
+                                    $path = "uploads/".$row['gambar_produk'];
+                            ?>
+                            <tr>
+                                <td class="ps-4 text-muted"><?= $no++ ?></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <?php if(file_exists($path) && $row['gambar_produk'] != ""): ?>
+                                            <img src="<?= $path ?>" width="45" height="45" class="rounded me-3 shadow-sm" style="object-fit:cover;">
+                                        <?php else: ?>
+                                            <div style="width:45px; height:45px;" class="rounded me-3 bg-light d-flex align-items-center justify-content-center text-muted">
+                                                <i class="fas fa-image"></i>
+                                            </div>
+                                        <?php endif; ?>
+                                        <div>
+                                            <div class="fw-bold text-dark"><?= $row['nama_produk'] ?></div>
+                                            <small class="text-muted">ID: #<?= $row['id_produk'] ?></small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-light text-dark border"><?= $row['jumlah_produk'] ?> Pcs</span></td>
+                                <td class="fw-bold text-primary">Rp <?= number_format($row['harga_produk'], 0, ',', '.') ?></td>
+                                <td class="text-center pe-4">
+                                    <a href="edit-produk.php?id=<?= $row['id_produk'] ?>" class="btn btn-light btn-sm rounded-circle me-1 text-warning shadow-sm">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="hapus-produk.php?id=<?= $row['id_produk'] ?>" class="btn btn-light btn-sm rounded-circle text-danger shadow-sm" onclick="return confirm('Hapus produk ini?')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <?php 
+                                endwhile; 
+                            else:
+                            ?>
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">Belum ada data produk tersedia.</td>
+                            </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
+    <?php endif; ?>
+
+    <?php if($page == 'pelanggan'): ?>
+        <div class="card card-table shadow-sm">
+            <div class="card-header bg-white py-3 border-0">
+                <h5 class="mb-0 fw-bold text-primary"><i class="fas fa-users me-2"></i>Daftar Pelanggan Terdaftar</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">No</th>
+                                <th>Nama Lengkap</th>
+                                <th>Username</th>
+                                <th>Kontak</th>
+                                <th class="pe-4">Alamat</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php 
+                            $query_pelanggan = mysqli_query($conn, "SELECT * FROM user WHERE role_user = 'pelanggan' ORDER BY nama_user ASC");
+                            $no = 1;
+                            if(mysqli_num_rows($query_pelanggan) > 0):
+                                while($row = mysqli_fetch_assoc($query_pelanggan)):
+                            ?>
+                            <tr>
+                                <td class="ps-4 text-muted"><?= $no++ ?></td>
+                                <td>
+                                    <div class="fw-bold text-dark"><?= $row['nama_user'] ?></div>
+                                    <small class="text-muted">ID: #<?= $row['id_user'] ?></small>
+                                </td>
+                                <td><span class="badge bg-light text-dark border fw-normal"><?= $row['username_user'] ?></span></td>
+                                <td><i class="fas fa-phone-alt me-1 small text-muted"></i> <?= $row['telp_user'] ?></td>
+                                <td class="pe-4"><small class="text-muted"><?= $row['alamat_user'] ?></small></td>
+                            </tr>
+                            <?php 
+                                endwhile; 
+                            else: 
+                            ?>
+                            <tr><td colspan="5" class="text-center py-5 text-muted">Belum ada pelanggan yang mendaftar.</td></tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <?php if($page == 'pesanan'): ?>
+        <?php
+        // Logika Update Status
+        if(isset($_POST['update_status'])){
+            $id_p = $_POST['id_pesanan'];
+            $stt = $_POST['status_baru'];
+            mysqli_query($conn, "UPDATE pesanan SET status_pesanan = '$stt' WHERE id_pesanan = '$id_p'");
+            echo "<script>window.location='dashboard-admin.php?page=pesanan';</script>";
+        }
+        ?>
+        <div class="card card-table shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold text-primary"><i class="fas fa-shopping-bag me-2"></i>Riwayat Pesanan Masuk</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">No</th>
+                                <th>Pelanggan</th>
+                                <th>ID Pesanan</th>
+                                <th>Tgl Pesanan</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th class="pe-4 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php 
+                            $no=1; 
+                            $q = mysqli_query($conn, "SELECT pesanan.*, user.nama_user FROM pesanan JOIN user ON pesanan.id_user = user.id_user ORDER BY id_pesanan DESC");
+                            if($q && mysqli_num_rows($q) > 0):
+                                while($r=mysqli_fetch_assoc($q)):
+                            ?>
+                            <tr>
+                                <td class="ps-4"><?= $no++ ?></td>
+                                <td><?= $r['nama_user'] ?></td>
+                                <td><span class="fw-bold">#ORD-<?= $r['id_pesanan'] ?></span></td>
+                                <td><?= date('d M Y', strtotime($r['tanggal_pesanan'])) ?></td>
+                                <td class="fw-bold text-primary">Rp <?= number_format($r['total_harga'], 0, ',', '.') ?></td>
+                                <td>
+                                    <?php 
+                                        $badge = 'bg-warning';
+                                        if($r['status_pesanan'] == 'Selesai') $badge = 'bg-success';
+                                        if($r['status_pesanan'] == 'Dibatalkan') $badge = 'bg-danger';
+                                    ?>
+                                    <span class="badge rounded-pill <?= $badge ?>"><?= $r['status_pesanan'] ?></span>
+                                </td>
+                                <td class="pe-4 text-center">
+                                    <form method="POST" class="d-inline">
+                                        <input type="hidden" name="id_pesanan" value="<?= $r['id_pesanan'] ?>">
+                                        <select name="status_baru" onchange="this.form.submit()" class="form-select form-select-sm d-inline-block w-auto rounded-pill">
+                                            <option value="">Update Status</option>
+                                            <option value="Pending">Pending</option>
+                                            <option value="Dikemas">Dikemas</option>
+                                            <option value="Selesai">Selesai</option>
+                                            <option value="Dibatalkan">Dibatalkan</option>
+                                        </select>
+                                        <input type="hidden" name="update_status" value="1">
+                                    </form>
+                                </td>
+                            </tr>
+                            <?php 
+                                    endwhile; 
+                                else: 
+                                    echo '<tr><td colspan="7" class="text-center py-5 text-muted">Belum ada pesanan masuk</td></tr>';
+                                endif;
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+
 </div>
 
 <script src="assets/js/bootstrap.bundle.min.js"></script>
