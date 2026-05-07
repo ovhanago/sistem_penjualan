@@ -16,42 +16,56 @@ require_once "config/koneksi.php";
             --primary-color: #0d6efd;
             --soft-bg: #f8f9fa;
         }
-        body { background-color: var(--soft-bg); font-family: 'Segoe UI', Roboto, sans-serif; }
-        .navbar { box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .product-card { border: none; border-radius: 15px; transition: transform 0.3s, box-shadow 0.3s; overflow: hidden; height: 100%; background: #fff; }
-        .product-card:hover { transform: translateY(-10px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
-        .product-img { height: 250px; object-fit: cover; }
-        .hero-section { background: linear-gradient(rgba(13, 110, 253, 0.7), rgba(13, 110, 253, 0.7)), url('https://sultansinindonesieblog.wordpress.com/wp-content/uploads/2021/12/1-ng.jpg'); background-size: cover; background-position: center; color: white; padding: 100px 0; margin-bottom: 50px; border-radius: 0 0 50px 50px; }
+        body { background-color: var(--soft-bg); font-family: 'Segoe UI', Roboto, sans-serif; overflow-x: hidden; }
+        .navbar { box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 1050; }
+        .navbar-brand { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%; }
         
-        /* Konsistensi Search Box */
-        .search-box .form-control { border-radius: 50px 0 0 50px; padding-left: 25px; }
-        .search-box .btn { border-radius: 0 50px 50px 0; padding-right: 25px; }
+        .product-card { border: none; border-radius: 15px; transition: transform 0.3s, box-shadow 0.3s; overflow: hidden; height: 100%; background: #fff; display: flex; flex-direction: column; }
+        .product-card:hover { transform: translateY(-10px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
+        .product-img { height: 250px; object-fit: cover; width: 100%; }
+        .hero-section { background: linear-gradient(rgba(13, 110, 253, 0.7), rgba(13, 110, 253, 0.7)), url('https://sultansinindonesieblog.wordpress.com/wp-content/uploads/2021/12/1-ng.jpg'); background-size: cover; background-position: center; color: white; padding: 100px 0; margin-bottom: 50px; border-radius: 0 0 50px 50px; width: 100%; }
+        
+        /* Konsistensi Search Box agar tidak ketimpa */
+        .search-box { width: 50%; }
+        .search-box .form-control { border-radius: 50px 0 0 50px; padding-left: 20px; }
+        .search-box .btn { border-radius: 0 50px 50px 0; padding-right: 20px; }
+
+        @media (max-width: 991px) {
+            .search-box { width: 100% !important; margin: 15px 0; }
+            .navbar-collapse { padding-bottom: 15px; }
+        }
 
         @media (max-width: 768px) {
-            .hero-section { padding: 60px 0; border-radius: 0 0 30px 30px; }
-            .hero-section h1 { font-size: 2rem; }
-            .navbar-brand { font-size: 1.2rem !important; }
-            .product-img { height: 200px; }
-            /* Memastikan grid tetap konsisten (misal 1 atau 2 kolom sesuai keinginan user, tapi UI tetap gaya PC) */
-            .col-custom { width: 50%; }
+            .hero-section { padding: 60px 20px; border-radius: 0 0 30px 30px; }
+            .hero-section h1 { font-size: 1.8rem; }
+            .navbar-brand { font-size: 1.1rem !important; max-width: 60%; }
+            .product-img { height: 180px; }
+            .card-body { padding: 15px !important; }
+            .product-title { font-size: 0.9rem; }
+            .product-price { font-size: 1rem; }
         }
     </style>
 </head>
 <body>
 
-<!-- NAVBAR (Sama di PC & HP) -->
+<!-- NAVBAR (Sama di PC & HP dengan penyesuaian spasi) -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
     <div class="container">
-        <a class="navbar-brand fw-bold fs-4" href="index.php">
+        <div class="d-flex align-items-center justify-content-between w-100 d-lg-none">
+            <a class="navbar-brand fw-bold" href="index.php">
+                <i class="fas fa-store me-1"></i>Toko Adat
+            </a>
+            <button class="navbar-toggler shadow-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+
+        <a class="navbar-brand fw-bold fs-4 d-none d-lg-block" href="index.php">
             <i class="fas fa-store me-2"></i>Toko Adat
         </a>
-        
-        <button class="navbar-toggler shadow-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
 
         <div class="collapse navbar-collapse" id="navbarNav">
-            <form class="d-flex mx-auto w-50 my-3 my-lg-0 search-box">
+            <form class="d-flex mx-auto search-box">
                 <div class="input-group w-100">
                     <input class="form-control border-0" type="search" placeholder="Cari pakaian adat...">
                     <button class="btn btn-light text-primary" type="submit">
@@ -61,15 +75,18 @@ require_once "config/koneksi.php";
             </form>
 
             <ul class="navbar-nav align-items-center ms-auto">
-                <li class="nav-item me-lg-3">
-                    <a href="keranjang.php" class="nav-link position-relative text-white">
+                <li class="nav-item w-100 text-center text-lg-start">
+                    <a href="keranjang.php" class="nav-link position-relative text-white py-2">
                         <i class="fas fa-shopping-cart fs-5"></i>
                         <?php if(isset($_SESSION['keranjang']) && count($_SESSION['keranjang']) > 0): ?>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 10px;">
+                        <span class="position-absolute top-0 start-50 translate-middle-x badge rounded-pill bg-danger d-lg-none" style="font-size: 9px; margin-left: 15px; margin-top: 5px;">
+                            <?= count($_SESSION['keranjang']) ?>
+                        </span>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none d-lg-block" style="font-size: 10px;">
                             <?= count($_SESSION['keranjang']) ?>
                         </span>
                         <?php endif; ?>
-                        <span class="d-lg-none ms-2">Keranjang</span>
+                        <span class="ms-2 d-lg-none">Keranjang Belanja</span>
                     </a>
                 </li>
                 
