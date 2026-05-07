@@ -1,7 +1,11 @@
-FROM php:8.2-apache
+FROM php:8.2-cli
+
+RUN apt-get update && apt-get install -y unzip libzip-dev
 
 RUN docker-php-ext-install mysqli pdo pdo_mysql
 
-COPY . /var/www/html/
+COPY . /app
 
-EXPOSE 80
+WORKDIR /app
+
+CMD php -S 0.0.0.0:$PORT
