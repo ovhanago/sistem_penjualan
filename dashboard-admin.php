@@ -38,13 +38,12 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
             left: 0;
             top: 0;
             box-shadow: 4px 0 10px rgba(0,0,0,0.03);
-            z-index: 1050;
-            transition: all 0.3s ease;
+            z-index: 1000;
+            transition: all 0.3s;
         }
         .sidebar-header {
-            padding: 25px;
+            padding: 30px 25px;
             border-bottom: 1px solid #f1f1f1;
-            background: #fff;
         }
         .nav-list {
             padding: 20px 15px;
@@ -72,13 +71,12 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
         /* MAIN CONTENT */
         .main-content {
             margin-left: 260px;
-            padding: 20px;
+            padding: 30px;
             min-height: 100vh;
-            transition: all 0.3s ease;
         }
         .top-navbar {
             background: #fff;
-            padding: 15px 25px;
+            padding: 15px 30px;
             border-radius: 15px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.03);
             margin-bottom: 30px;
@@ -86,27 +84,7 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
             justify-content: space-between;
             align-items: center;
         }
-        
-        /* MOBILE ADJUSTMENTS */
-        @media (max-width: 991.98px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            .sidebar.show {
-                transform: translateX(0);
-                width: 280px;
-            }
-            .main-content {
-                margin-left: 0;
-                padding: 15px;
-            }
-            .top-navbar {
-                padding: 10px 15px;
-                margin-bottom: 20px;
-            }
-        }
-
-        /* CARDS & TABLES */
+        /* CARDS */
         .stat-card {
             border: none;
             border-radius: 20px;
@@ -114,338 +92,361 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
             background: #fff;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03);
             transition: transform 0.3s;
-            height: 100%;
         }
+        .stat-card:hover { transform: translateY(-5px); }
         .icon-box {
-            width: 48px;
-            height: 48px;
+            width: 50px;
+            height: 50px;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 24px;
         }
+        /* TABLE */
         .card-table {
             border: none;
             border-radius: 20px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03);
             overflow: hidden;
-            background: #fff;
         }
-        .table thead th {
-            background-color: #f8f9fa;
-            border: none;
-            padding: 15px;
-            font-weight: 600;
-            font-size: 13px;
-            color: #6c757d;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .table td {
-            padding: 15px;
-            vertical-align: middle;
-            border-bottom: 1px solid #f8f9fa;
-        }
-        .btn-action {
-            width: 32px;
-            height: 32px;
-            padding: 0;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-        }
+        .table thead { background-color: #f8f9fa; }
+        .table th { border: none; padding: 15px; font-weight: 600; font-size: 14px; color: #6c757d; }
+        .table td { padding: 15px; border-bottom: 1px solid #f8f9fa; vertical-align: middle; }
     </style>
 </head>
 <body>
 
 <!-- SIDEBAR -->
-<div class="sidebar" id="sidebar">
-    <div class="sidebar-header d-flex justify-content-between align-items-center">
-        <h4 class="m-0 fw-bold text-primary"><i class="fas fa-store me-2"></i>Admin</h4>
-        <button class="btn d-lg-none" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
+<div class="sidebar">
+    <div class="sidebar-header">
+        <h4 class="fw-bold text-primary mb-0"><i class="fas fa-store me-2"></i>Admin Panel</h4>
     </div>
     <div class="nav-list">
-        <a href="dashboard-admin.php?page=dashboard" class="nav-item <?= $page=='dashboard'?'active':'' ?>">
-            <i class="fas fa-th-large"></i> Dashboard
+        <a href="dashboard-admin.php?page=dashboard" class="nav-item <?= $page == 'dashboard' ? 'active' : '' ?>">
+            <i class="fas fa-home"></i> Dashboard
         </a>
-        <a href="dashboard-admin.php?page=produk" class="nav-item <?= $page=='produk'?'active':'' ?>">
+        <a href="dashboard-admin.php?page=produk" class="nav-item <?= $page == 'produk' ? 'active' : '' ?>">
             <i class="fas fa-box"></i> Data Produk
         </a>
-        <a href="dashboard-admin.php?page=pesanan" class="nav-item <?= $page=='pesanan'?'active':'' ?>">
+        <a href="dashboard-admin.php?page=pesanan" class="nav-item <?= $page == 'pesanan' ? 'active' : '' ?>">
             <i class="fas fa-shopping-bag"></i> Pesanan
         </a>
-        <a href="dashboard-admin.php?page=pelanggan" class="nav-item <?= $page=='pelanggan'?'active':'' ?>">
+        <a href="dashboard-admin.php?page=pelanggan" class="nav-item <?= $page == 'pelanggan' ? 'active' : '' ?>">
             <i class="fas fa-users"></i> Pelanggan
-        </a>
-        <a href="dashboard-admin.php?page=laporan" class="nav-item <?= $page=='laporan'?'active':'' ?>">
-            <i class="fas fa-file-alt"></i> Laporan
-        </a>
-        <hr class="mx-3 opacity-10">
-        <a href="logout.php" class="nav-item text-danger">
-            <i class="fas fa-sign-out-alt"></i> Logout
-        </a>
+        <div class="mt-4 pt-4 border-top">
+            <a href="logout.php" class="nav-item text-danger">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
     </div>
 </div>
 
 <!-- MAIN CONTENT -->
 <div class="main-content">
+    
     <!-- TOP NAVBAR -->
     <div class="top-navbar">
+        <h5 class="fw-bold mb-0"><?= ucfirst($page) ?> Overview</h5>
         <div class="d-flex align-items-center">
-            <button class="btn btn-light d-lg-none me-3 rounded-pill" onclick="toggleSidebar()">
-                <i class="fas fa-bars"></i>
-            </button>
-            <h5 class="m-0 fw-bold d-none d-sm-block text-dark">
-                <?= ucfirst($page) ?> Overview
-            </h5>
-        </div>
-        <div class="d-flex align-items-center">
-            <div class="text-end me-3 d-none d-md-block">
-                <p class="m-0 fw-bold lh-1"><?= $_SESSION['nama_user'] ?></p>
-                <small class="text-muted">Administrator</small>
+            <div class="text-end me-3">
+                <small class="text-muted d-block">Selamat datang,</small>
+                <span class="fw-bold"><?= $_SESSION['nama_user'] ?></span>
             </div>
-            <img src="https://ui-avatars.com/api/?name=<?= $_SESSION['nama_user'] ?>&background=0D6EFD&color=fff" class="rounded-circle shadow-sm" width="40" height="40">
+            <img src="https://ui-avatars.com/api/?name=<?= $_SESSION['nama_user'] ?>&background=0D6EFD&color=fff" class="rounded-circle" width="40">
         </div>
     </div>
 
-    <!-- PAGE CONTENT -->
-    <div class="container-fluid p-0">
-        <?php if($page == 'dashboard'): ?>
-            <!-- STATS -->
-            <div class="row g-4 mb-4">
-                <div class="col-6 col-lg-3">
-                    <div class="stat-card">
-                        <div class="icon-box bg-primary bg-opacity-10 text-primary mb-3">
+    <?php if($page == 'dashboard'): ?>
+        <!-- DASHBOARD STATS -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1 small">Total Produk</p>
+                            <h3 class="fw-bold mb-0">
+                                <?php
+                                $q_total_produk = mysqli_query($conn, "SELECT id_produk FROM produk");
+                                echo $q_total_produk ? mysqli_num_rows($q_total_produk) : 0;
+                                ?>
+                            </h3>
+                        </div>
+                        <div class="icon-box bg-primary text-white">
                             <i class="fas fa-box"></i>
                         </div>
-                        <p class="text-muted mb-1 small fw-bold">PRODUK</p>
-                        <h3 class="fw-bold m-0">
-                            <?php echo mysqli_num_rows(mysqli_query($conn, "SELECT id_produk FROM produk")); ?>
-                        </h3>
                     </div>
                 </div>
-                <div class="col-6 col-lg-3">
-                    <div class="stat-card">
-                        <div class="icon-box bg-warning bg-opacity-10 text-warning mb-3">
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1 small">Pesanan Baru</p>
+                            <h3 class="fw-bold mb-0">
+                                <?php
+                                // Cek apakah tabel pesanan ada
+                                $check_table = mysqli_query($conn, "SHOW TABLES LIKE 'pesanan'");
+                                if(mysqli_num_rows($check_table) > 0) {
+                                    $q_pesanan_baru = mysqli_query($conn, "SELECT id_pesanan FROM pesanan WHERE status_pesanan = 'Pending'");
+                                    if(!$q_pesanan_baru) {
+                                        $q_pesanan_baru = mysqli_query($conn, "SELECT id_pesanan FROM pesanan WHERE status = 'Pending'");
+                                    }
+                                    echo $q_pesanan_baru ? mysqli_num_rows($q_pesanan_baru) : 0;
+                                } else {
+                                    echo "0";
+                                }
+                                ?>
+                            </h3>
+                        </div>
+                        <div class="icon-box bg-warning text-white">
                             <i class="fas fa-shopping-cart"></i>
                         </div>
-                        <p class="text-muted mb-1 small fw-bold">PESANAN</p>
-                        <h3 class="fw-bold m-0">
-                            <?php echo mysqli_num_rows(mysqli_query($conn, "SELECT id_pesanan FROM pesanan WHERE status_pesanan != 'Selesai'")); ?>
-                        </h3>
                     </div>
                 </div>
-                <div class="col-6 col-lg-3">
-                    <div class="stat-card">
-                        <div class="icon-box bg-success bg-opacity-10 text-success mb-3">
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1 small">Total Pelanggan</p>
+                            <h3 class="fw-bold mb-0">
+                                <?php
+                                $q_total_pelanggan = mysqli_query($conn, "SELECT id_user FROM user WHERE role_user = 'pelanggan'");
+                                echo $q_total_pelanggan ? mysqli_num_rows($q_total_pelanggan) : 0;
+                                ?>
+                            </h3>
+                        </div>
+                        <div class="icon-box bg-success text-white">
                             <i class="fas fa-users"></i>
                         </div>
-                        <p class="text-muted mb-1 small fw-bold">USER</p>
-                        <h3 class="fw-bold m-0">
-                            <?php echo mysqli_num_rows(mysqli_query($conn, "SELECT id_user FROM user WHERE role_user = 'pelanggan'")); ?>
-                        </h3>
                     </div>
                 </div>
-                <div class="col-6 col-lg-3">
-                    <div class="stat-card">
-                        <div class="icon-box bg-info bg-opacity-10 text-info mb-3">
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1 small">Total Pendapatan</p>
+                            <?php 
+                                $total_income = 0;
+                                $check_table_income = mysqli_query($conn, "SHOW TABLES LIKE 'pesanan'");
+                                if(mysqli_num_rows($check_table_income) > 0) {
+                                    $income_q = mysqli_query($conn, "SELECT SUM(total_harga) as total FROM pesanan WHERE status_pesanan != 'Dibatalkan'");
+                                    if(!$income_q) {
+                                        $income_q = mysqli_query($conn, "SELECT SUM(total_harga) as total FROM pesanan WHERE status != 'Dibatalkan'");
+                                    }
+                                    $res_income = $income_q ? mysqli_fetch_assoc($income_q) : null;
+                                    $total_income = $res_income['total'] ?? 0;
+                                }
+                            ?>
+                            <h3 class="fw-bold mb-0">Rp <?= number_format($total_income, 0, ',', '.') ?></h3>
+                        </div>
+                        <div class="icon-box bg-info text-white">
                             <i class="fas fa-wallet"></i>
                         </div>
-                        <p class="text-muted mb-1 small fw-bold">PENDAPATAN</p>
-                        <?php 
-                            $q_inc = mysqli_query($conn, "SELECT SUM(total_harga) as total FROM pesanan WHERE status_pesanan = 'Selesai'");
-                            $r_inc = mysqli_fetch_assoc($q_inc);
-                        ?>
-                        <h4 class="fw-bold m-0">Rp<?= number_format($r_inc['total'] ?? 0, 0, ',', '.') ?></h4>
                     </div>
                 </div>
             </div>
-            
-            <!-- RECENT ORDERS -->
-            <div class="card card-table">
-                <div class="card-header bg-white py-3">
-                    <h6 class="m-0 fw-bold">Pesanan Terbaru</h6>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Pelanggan</th>
-                                <th>Total</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php 
-                            $q_recent = mysqli_query($conn, "SELECT pesanan.*, user.nama_user FROM pesanan JOIN user ON pesanan.id_user = user.id_user ORDER BY id_pesanan DESC LIMIT 5");
-                            while($r = mysqli_fetch_assoc($q_recent)):
-                            ?>
-                            <tr>
-                                <td class="fw-bold">#<?= $r['id_pesanan'] ?></td>
-                                <td><?= $r['nama_user'] ?></td>
-                                <td class="fw-bold text-primary">Rp<?= number_format($r['total_harga'], 0, ',', '.') ?></td>
-                                <td><span class="badge rounded-pill bg-light text-dark border"><?= $r['status_pesanan'] ?></span></td>
-                            </tr>
-                            <?php endwhile; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        </div>
+    <?php endif; ?>
 
-        <?php elseif($page == 'produk'): ?>
-            <div class="card card-table">
-                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                    <h6 class="m-0 fw-bold">Daftar Produk</h6>
-                    <a href="tambah-produk.php" class="btn btn-primary btn-sm rounded-pill px-3">
-                        <i class="fas fa-plus me-1"></i> Tambah
-                    </a>
-                </div>
+    <?php if($page == 'produk'): ?>
+        <div class="card card-table shadow-sm">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold">Manajemen Produk</h5>
+                <a href="tambah-produk.php" class="btn btn-primary btn-sm rounded-pill px-4 shadow-sm">
+                    <i class="fas fa-plus me-1"></i> Tambah Produk
+                </a>
+            </div>
+            <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
                         <thead>
                             <tr>
-                                <th>Produk</th>
+                                <th class="ps-4">No</th>
+                                <th>Info Produk</th>
                                 <th>Stok</th>
                                 <th>Harga</th>
-                                <th class="text-center">Aksi</th>
+                                <th class="text-center pe-4">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php 
-                            $q_prod = mysqli_query($conn, "SELECT * FROM produk ORDER BY id_produk DESC");
-                            while($row = mysqli_fetch_assoc($q_prod)):
-                                $img = "uploads/".$row['gambar_produk'];
+                            $data_produk = mysqli_query($conn, "SELECT * FROM produk ORDER BY id_produk DESC");
+                            $no = 1;
+                            if(mysqli_num_rows($data_produk) > 0) :
+                                while($row = mysqli_fetch_assoc($data_produk)) : 
+                                    $path = "uploads/".$row['gambar_produk'];
                             ?>
                             <tr>
+                                <td class="ps-4 text-muted"><?= $no++ ?></td>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <img src="<?= file_exists($img) && $row['gambar_produk'] ? $img : 'assets/img/no-image.png' ?>" width="40" height="40" class="rounded me-3 shadow-sm" style="object-fit:cover;">
+                                        <?php if(file_exists($path) && $row['gambar_produk'] != ""): ?>
+                                            <img src="<?= $path ?>" width="45" height="45" class="rounded me-3 shadow-sm" style="object-fit:cover;">
+                                        <?php else: ?>
+                                            <div style="width:45px; height:45px;" class="rounded me-3 bg-light d-flex align-items-center justify-content-center text-muted">
+                                                <i class="fas fa-image"></i>
+                                            </div>
+                                        <?php endif; ?>
                                         <div>
                                             <div class="fw-bold text-dark"><?= $row['nama_produk'] ?></div>
                                             <small class="text-muted">ID: #<?= $row['id_produk'] ?></small>
                                         </div>
                                     </div>
                                 </td>
-                                <td><span class="badge bg-light text-dark border"><?= $row['jumlah_produk'] ?></span></td>
-                                <td class="fw-bold text-primary">Rp<?= number_format($row['harga_produk'], 0, ',', '.') ?></td>
-                                <td class="text-center">
-                                    <a href="edit-produk.php?id=<?= $row['id_produk'] ?>" class="btn btn-light btn-action text-warning me-1 border">
+                                <td><span class="badge bg-light text-dark border"><?= $row['jumlah_produk'] ?> Pcs</span></td>
+                                <td class="fw-bold text-primary">Rp <?= number_format($row['harga_produk'], 0, ',', '.') ?></td>
+                                <td class="text-center pe-4">
+                                    <a href="edit-produk.php?id=<?= $row['id_produk'] ?>" class="btn btn-light btn-sm rounded-circle me-1 text-warning shadow-sm">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a href="hapus-produk.php?id=<?= $row['id_produk'] ?>" class="btn btn-light btn-action text-danger border" onclick="return confirm('Hapus produk?')">
+                                    <a href="hapus-produk.php?id=<?= $row['id_produk'] ?>" class="btn btn-light btn-sm rounded-circle text-danger shadow-sm" onclick="return confirm('Hapus produk ini?')">
                                         <i class="fas fa-trash"></i>
                                     </a>
                                 </td>
                             </tr>
-                            <?php endwhile; ?>
+                            <?php 
+                                endwhile; 
+                            else:
+                            ?>
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">Belum ada data produk tersedia.</td>
+                            </tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
             </div>
+        </div>
+    <?php endif; ?>
 
-        <?php elseif($page == 'pesanan'): ?>
-            <div class="card card-table">
-                <div class="card-header bg-white py-3">
-                    <h6 class="m-0 fw-bold">Semua Pesanan</h6>
-                </div>
+    <?php if($page == 'pelanggan'): ?>
+        <div class="card card-table shadow-sm">
+            <div class="card-header bg-white py-3 border-0">
+                <h5 class="mb-0 fw-bold text-primary"><i class="fas fa-users me-2"></i>Daftar Pelanggan Terdaftar</h5>
+            </div>
+            <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Pelanggan</th>
-                                <th>Total</th>
-                                <th>Status</th>
-                                <th class="text-center">Update</th>
+                                <th class="ps-4">No</th>
+                                <th>Nama Lengkap</th>
+                                <th>Username</th>
+                                <th>Kontak</th>
+                                <th class="pe-4">Alamat</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php 
-                            if(isset($_POST['up_status'])){
-                                $idp = $_POST['idp'];
-                                $stts = $_POST['stts'];
-                                mysqli_query($conn, "UPDATE pesanan SET status_pesanan='$stts' WHERE id_pesanan='$idp'");
-                                echo "<script>window.location='dashboard-admin.php?page=pesanan';</script>";
-                            }
-                            $q_pes = mysqli_query($conn, "SELECT pesanan.*, user.nama_user FROM pesanan JOIN user ON pesanan.id_user = user.id_user ORDER BY id_pesanan DESC");
-                            while($r = mysqli_fetch_assoc($q_pes)):
+                            $query_pelanggan = mysqli_query($conn, "SELECT * FROM user WHERE role_user = 'pelanggan' ORDER BY nama_user ASC");
+                            $no = 1;
+                            if(mysqli_num_rows($query_pelanggan) > 0):
+                                while($row = mysqli_fetch_assoc($query_pelanggan)):
                             ?>
                             <tr>
-                                <td class="fw-bold">#<?= $r['id_pesanan'] ?></td>
+                                <td class="ps-4 text-muted"><?= $no++ ?></td>
+                                <td>
+                                    <div class="fw-bold text-dark"><?= $row['nama_user'] ?></div>
+                                    <small class="text-muted">ID: #<?= $row['id_user'] ?></small>
+                                </td>
+                                <td><span class="badge bg-light text-dark border fw-normal"><?= $row['username_user'] ?></span></td>
+                                <td><i class="fas fa-phone-alt me-1 small text-muted"></i> <?= $row['telp_user'] ?></td>
+                                <td class="pe-4"><small class="text-muted"><?= $row['alamat_user'] ?></small></td>
+                            </tr>
+                            <?php 
+                                endwhile; 
+                            else: 
+                            ?>
+                            <tr><td colspan="5" class="text-center py-5 text-muted">Belum ada pelanggan yang mendaftar.</td></tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <?php if($page == 'pesanan'): ?>
+        <?php
+        // Logika Update Status
+        if(isset($_POST['update_status'])){
+            $id_p = $_POST['id_pesanan'];
+            $stt = $_POST['status_baru'];
+            mysqli_query($conn, "UPDATE pesanan SET status_pesanan = '$stt' WHERE id_pesanan = '$id_p'");
+            echo "<script>window.location='dashboard-admin.php?page=pesanan';</script>";
+        }
+        ?>
+        <div class="card card-table shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold text-primary"><i class="fas fa-shopping-bag me-2"></i>Riwayat Pesanan Masuk</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">No</th>
+                                <th>Pelanggan</th>
+                                <th>ID Pesanan</th>
+                                <th>Tgl Pesanan</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th class="pe-4 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php 
+                            $no=1; 
+                            $q = mysqli_query($conn, "SELECT pesanan.*, user.nama_user FROM pesanan JOIN user ON pesanan.id_user = user.id_user ORDER BY id_pesanan DESC");
+                            if($q && mysqli_num_rows($q) > 0):
+                                while($r=mysqli_fetch_assoc($q)):
+                            ?>
+                            <tr>
+                                <td class="ps-4"><?= $no++ ?></td>
                                 <td><?= $r['nama_user'] ?></td>
-                                <td class="fw-bold text-primary">Rp<?= number_format($r['total_harga'], 0, ',', '.') ?></td>
+                                <td><span class="fw-bold">#ORD-<?= $r['id_pesanan'] ?></span></td>
+                                <td><?= date('d M Y', strtotime($r['tanggal_pesanan'])) ?></td>
+                                <td class="fw-bold text-primary">Rp <?= number_format($r['total_harga'], 0, ',', '.') ?></td>
                                 <td>
                                     <?php 
-                                        $clr = 'bg-warning';
-                                        if($r['status_pesanan'] == 'Selesai') $clr = 'bg-success';
-                                        if($r['status_pesanan'] == 'Dibatalkan') $clr = 'bg-danger';
+                                        $badge = 'bg-warning';
+                                        if($r['status_pesanan'] == 'Selesai') $badge = 'bg-success';
+                                        if($r['status_pesanan'] == 'Dibatalkan') $badge = 'bg-danger';
                                     ?>
-                                    <span class="badge rounded-pill <?= $clr ?>"><?= $r['status_pesanan'] ?></span>
+                                    <span class="badge rounded-pill <?= $badge ?>"><?= $r['status_pesanan'] ?></span>
                                 </td>
-                                <td class="text-center">
-                                    <form method="POST" class="d-flex gap-1 justify-content-center">
-                                        <input type="hidden" name="idp" value="<?= $r['id_pesanan'] ?>">
-                                        <select name="stts" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
-                                            <option value="">Ganti</option>
+                                <td class="pe-4 text-center">
+                                    <form method="POST" class="d-inline">
+                                        <input type="hidden" name="id_pesanan" value="<?= $r['id_pesanan'] ?>">
+                                        <select name="status_baru" onchange="this.form.submit()" class="form-select form-select-sm d-inline-block w-auto rounded-pill">
+                                            <option value="">Update Status</option>
                                             <option value="Pending">Pending</option>
                                             <option value="Dikemas">Dikemas</option>
                                             <option value="Selesai">Selesai</option>
                                             <option value="Dibatalkan">Dibatalkan</option>
                                         </select>
-                                        <input type="hidden" name="up_status" value="1">
+                                        <input type="hidden" name="update_status" value="1">
                                     </form>
                                 </td>
                             </tr>
-                            <?php endwhile; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            
-        <?php elseif($page == 'pelanggan'): ?>
-            <div class="card card-table">
-                <div class="card-header bg-white py-3">
-                    <h6 class="m-0 fw-bold">Daftar Pelanggan</h6>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead>
-                            <tr>
-                                <th>Nama</th>
-                                <th>Username</th>
-                                <th>Telepon</th>
-                                <th>Alamat</th>
-                            </tr>
-                        </thead>
-                        <tbody>
                             <?php 
-                            $q_usr = mysqli_query($conn, "SELECT * FROM user WHERE role_user='pelanggan' ORDER BY id_user DESC");
-                            while($r = mysqli_fetch_assoc($q_usr)):
+                                    endwhile; 
+                                else: 
+                                    echo '<tr><td colspan="7" class="text-center py-5 text-muted">Belum ada pesanan masuk</td></tr>';
+                                endif;
                             ?>
-                            <tr>
-                                <td><div class="fw-bold"><?= $r['nama_user'] ?></div></td>
-                                <td><span class="badge bg-light text-dark border fw-normal"><?= $r['username_user'] ?></span></td>
-                                <td><?= $r['telp_user'] ?></td>
-                                <td><small class="text-muted"><?= $r['alamat_user'] ?></small></td>
-                            </tr>
-                            <?php endwhile; ?>
                         </tbody>
                     </table>
                 </div>
             </div>
+        </div>
+    <?php endif; ?>
 
-        <?php endif; ?>
-    </div>
 </div>
 
 <script src="assets/js/bootstrap.bundle.min.js"></script>
-<script>
-    function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('show');
-    }
-</script>
 </body>
 </html>
