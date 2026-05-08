@@ -2,7 +2,6 @@
 session_start();
 require_once "config/koneksi.php";
 
-// Proteksi halaman Pelanggan
 if(!isset($_SESSION['id_user']) || $_SESSION['role_user'] != 'pelanggan'){
     header("Location: login.php");
     exit;
@@ -13,7 +12,7 @@ $nama_user = $_SESSION['nama_user'] ?? 'Pelanggan';
 
 // Statistik Pesanan
 $total_pesanan = mysqli_num_rows(mysqli_query($conn, "SELECT id_pesanan FROM pesanan WHERE id_user = '$id_user'"));
-$pesanan_proses = mysqli_num_rows(mysqli_query($conn, "SELECT id_pesanan FROM pesanan WHERE id_user = '$id_user' AND status_pesanan NOT IN ('Selesai', 'Dibatalkan', 'Batal')"));
+$pesanan_proses = mysqli_num_rows(mysqli_query($conn, "SELECT id_pesanan FROM pesanan WHERE id_user = '$id_user' AND status_pesanan NOT IN ('Selesai', 'Dibatalkan')"));
 $pesanan_selesai = mysqli_num_rows(mysqli_query($conn, "SELECT id_pesanan FROM pesanan WHERE id_user = '$id_user' AND status_pesanan = 'Selesai'"));
 ?>
 
@@ -22,225 +21,202 @@ $pesanan_selesai = mysqli_num_rows(mysqli_query($conn, "SELECT id_pesanan FROM p
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pesanan Saya - Toko Adat</title>
+    <title>Dashboard Pelanggan - Toko Adat</title>
     <link href="assets/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .card { border: none; border-radius: 15px; }
-        .navbar { box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
-        .table thead { background-color: #f1f3f5; }
-        .btn-action { width: 35px; height: 35px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; }
+        body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+        .navbar { background: #fff !important; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .navbar-brand { font-weight: 800; color: #0d6efd !important; }
         
-        .logout-link {
-            background-color: #dc3545;
-            color: white !important;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            padding: 6px 18px;
-            border-radius: 50px;
-            box-shadow: 0 4px 10px rgba(220, 53, 69, 0.2);
-            transition: all 0.3s ease;
-        }
-        .logout-link:hover {
-            background-color: #a71d2a;
-            color: white !important;
-            box-shadow: 0 6px 15px rgba(220, 53, 69, 0.4);
-            transform: translateY(-2px);
-        }
-        
-        /* Custom Styles for Banner & Stats */
-        .welcome-banner {
-            background: linear-gradient(45deg, #0d6efd, #0dcaf0);
+        .welcome-card {
+            background: linear-gradient(135deg, #0d6efd, #0099ff);
             color: white;
-            border-radius: 15px;
+            border-radius: 20px;
             padding: 30px;
             margin-bottom: 30px;
-            box-shadow: 0 4px 15px rgba(13, 110, 253, 0.2);
+            box-shadow: 0 10px 20px rgba(13, 110, 253, 0.15);
         }
+        
         .stat-card {
+            background: #fff;
+            border-radius: 15px;
+            padding: 20px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
             transition: transform 0.3s;
-            border-left: 5px solid #0d6efd;
+            height: 100%;
         }
         .stat-card:hover { transform: translateY(-5px); }
         .stat-icon {
-            width: 50px;
-            height: 50px;
-            background: rgba(13, 110, 253, 0.1);
-            color: #0d6efd;
+            width: 45px;
+            height: 45px;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .card-order {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            overflow: hidden;
+            border: none;
+        }
+        .table thead th {
+            background: #f8f9fa;
+            border: none;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 15px;
+        }
+        .table td { padding: 15px; vertical-align: middle; }
+        
+        .btn-custom { border-radius: 10px; font-weight: 600; padding: 8px 20px; transition: all 0.3s; }
+        
+        @media (max-width: 768px) {
+            .welcome-card { padding: 20px; }
+            .stat-card { padding: 15px; }
         }
     </style>
 </head>
 <body>
 
 <!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+<nav class="navbar navbar-expand-lg navbar-light sticky-top py-3">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="index.php">
-            <i class="fas fa-store me-2"></i>Toko Pakaian Adat
+        <a class="navbar-brand" href="index.php">
+            <i class="fas fa-store me-2"></i>TOKO ADAT
         </a>
-        <div class="ms-auto d-flex gap-2">
-            <a href="index.php" class="btn btn-light btn-sm rounded-pill px-3">
-                <i class="fas fa-shopping-bag me-1"></i> Belanja
-            </a>
-            <a href="keranjang.php" class="btn btn-light btn-sm rounded-pill px-3">
-                <i class="fas fa-shopping-cart me-1"></i> Keranjang
-            </a>
-            <a href="logout.php" class="logout-link ms-2">
-                <i class="fas fa-sign-out-alt me-1"></i> Logout
-            </a>
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center gap-2">
+                <li class="nav-item">
+                    <a class="nav-link fw-bold text-dark" href="index.php">Katalog</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-bold text-dark" href="keranjang.php">Keranjang</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-bold text-primary active" href="dashboard-pelanggan.php">Akun Saya</a>
+                </li>
+                <li class="nav-item ms-lg-3">
+                    <a href="logout.php" class="btn btn-outline-danger btn-custom btn-sm px-4">
+                        <i class="fas fa-sign-out-alt me-1"></i> Keluar
+                    </a>
+                </li>
+            </ul>
         </div>
     </div>
 </nav>
 
-<div class="container mt-4 mb-5">
-    <?php if(isset($_SESSION['success'])): ?>
-        <div class="alert alert-success alert-dismissible fade show rounded-pill px-4 shadow-sm mb-4 border-0" role="alert">
-            <i class="fas fa-check-circle me-2"></i> <?= $_SESSION['success'] ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        <?php unset($_SESSION['success']); ?>
-    <?php endif; ?>
-
-    <?php if(isset($_SESSION['error'])): ?>
-        <div class="alert alert-danger alert-dismissible fade show rounded-pill px-4 shadow-sm mb-4 border-0" role="alert">
-            <i class="fas fa-exclamation-circle me-2"></i> <?= $_SESSION['error'] ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        <?php unset($_SESSION['error']); ?>
-    <?php endif; ?>
-
-    <!-- Banner Selamat Datang -->
-    <div class="welcome-banner">
+<div class="container py-4 py-lg-5">
+    <!-- WELCOME -->
+    <div class="welcome-card">
         <div class="row align-items-center">
             <div class="col-md-8">
-                <h3 class="fw-bold mb-1">Halo, <?= $nama_user ?>! 👋</h3>
-                <p class="mb-0 opacity-75">Senang melihat Anda kembali. Pantau status pesanan pakaian adat Anda di sini.</p>
+                <h2 class="fw-bold mb-2">Halo, <?= $nama_user ?>! 👋</h2>
+                <p class="mb-0 opacity-75">Senang melihatmu kembali. Cek status pesanan atau lanjut belanja pakaian adat favoritmu.</p>
             </div>
-            <div class="col-md-4 text-md-end d-none d-md-block">
-                <i class="fas fa-user-circle fa-4x opacity-25"></i>
-            </div>
-        </div>
-    </div>
-
-    <!-- Baris Statistik -->
-    <div class="row mb-4">
-        <div class="col-md-4 mb-3">
-            <div class="card stat-card shadow-sm h-100">
-                <div class="card-body d-flex align-items-center">
-                    <div class="stat-icon me-3">
-                        <i class="fas fa-box"></i>
-                    </div>
-                    <div>
-                        <h6 class="text-muted mb-1 small text-uppercase fw-bold">Total Pesanan</h6>
-                        <h4 class="mb-0 fw-bold"><?= $total_pesanan ?></h4>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-3">
-            <div class="card stat-card shadow-sm h-100" style="border-left-color: #ffc107;">
-                <div class="card-body d-flex align-items-center">
-                    <div class="stat-icon me-3" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">
-                        <i class="fas fa-spinner"></i>
-                    </div>
-                    <div>
-                        <h6 class="text-muted mb-1 small text-uppercase fw-bold">Dalam Proses</h6>
-                        <h4 class="mb-0 fw-bold"><?= $pesanan_proses ?></h4>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-3">
-            <div class="card stat-card shadow-sm h-100" style="border-left-color: #198754;">
-                <div class="card-body d-flex align-items-center">
-                    <div class="stat-icon me-3" style="background: rgba(25, 135, 84, 0.1); color: #198754;">
-                        <i class="fas fa-check-double"></i>
-                    </div>
-                    <div>
-                        <h6 class="text-muted mb-1 small text-uppercase fw-bold">Selesai</h6>
-                        <h4 class="mb-0 fw-bold"><?= $pesanan_selesai ?></h4>
-                    </div>
-                </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a href="index.php" class="btn btn-light btn-custom shadow-sm text-primary">
+                    <i class="fas fa-shopping-bag me-2"></i> Belanja Lagi
+                </a>
             </div>
         </div>
     </div>
 
-    <!-- Tabel Pesanan -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow-sm overflow-hidden border-0">
-                <div class="card-header bg-white py-3 border-0">
-                    <h5 class="mb-0 fw-bold text-primary"><i class="fas fa-receipt me-2"></i>Riwayat Pesanan</h5>
+    <!-- STATS -->
+    <div class="row g-3 g-lg-4 mb-4">
+        <div class="col-4">
+            <div class="stat-card">
+                <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                    <i class="fas fa-shopping-basket"></i>
                 </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="text-muted small text-uppercase">
-                                <tr>
-                                    <th class="ps-4">No. Pesanan</th>
-                                    <th>Tanggal</th>
-                                    <th>Total Tagihan</th>
-                                    <th>Status Pesanan</th>
-                                    <th class="pe-4 text-center">Detail</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php 
-                                $res = mysqli_query($conn, "SELECT * FROM pesanan WHERE id_user = '$id_user' ORDER BY tanggal_pesanan DESC");
-                                if(mysqli_num_rows($res) > 0):
-                                    while($r = mysqli_fetch_assoc($res)):
-                                        $badge = 'bg-warning text-dark';
-                                        $status = $r['status_pesanan'];
-                                        if($status == 'Dikirim') $badge = 'bg-info text-white';
-                                        if($status == 'Selesai') $badge = 'bg-success text-white';
-                                        if($status == 'Dibatalkan' || $status == 'Batal') $badge = 'bg-danger text-white';
-                                ?>
-                                <tr>
-                                    <td class="ps-4 fw-bold">#ORD-<?= $r['id_pesanan'] ?></td>
-                                    <td><?= date('d M Y', strtotime($r['tanggal_pesanan'])) ?></td>
-                                    <td class="fw-bold text-primary">Rp <?= number_format($r['total_harga'], 0, ',', '.') ?></td>
-                                    <td>
-                                        <span class="badge rounded-pill <?= $badge ?> px-3 py-2" style="font-size: 11px;">
-                                            <?= $r['status_pesanan'] ?>
-                                        </span>
-                                    </td>
-                                    <td class="pe-4 text-center">
-                                        <div class="d-flex justify-content-center gap-1">
-                                            <a href="pesanan-detail.php?id=<?= $r['id_pesanan'] ?>" class="btn btn-light btn-sm rounded-circle text-primary shadow-sm btn-action" title="Lihat Detail">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <?php if($status == 'Pending' || $status == 'Menunggu Pembayaran' || $status == 'Dikemas'): ?>
-                                            <a href="batal-pesanan.php?id=<?= $r['id_pesanan'] ?>" class="btn btn-light btn-sm rounded-circle text-danger shadow-sm btn-action" title="Batalkan Pesanan" onclick="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini? Jika sudah dibayar, uang akan dikembalikan.')">
-                                                <i class="fas fa-times"></i>
-                                            </a>
-                                            <?php endif; ?>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <?php 
-                                    endwhile; 
-                                else: 
-                                ?>
-                                <tr>
-                                    <td colspan="5" class="text-center py-5 text-muted">
-                                        <i class="fas fa-history fa-3x mb-3 opacity-25"></i><br>
-                                        Belum ada riwayat pesanan.
-                                    </td>
-                                </tr>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <p class="text-muted small fw-bold mb-1">TOTAL</p>
+                <h4 class="fw-bold m-0"><?= $total_pesanan ?></h4>
             </div>
+        </div>
+        <div class="col-4">
+            <div class="stat-card">
+                <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                    <i class="fas fa-spinner"></i>
+                </div>
+                <p class="text-muted small fw-bold mb-1">PROSES</p>
+                <h4 class="fw-bold m-0"><?= $pesanan_proses ?></h4>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="stat-card">
+                <div class="stat-icon bg-success bg-opacity-10 text-success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <p class="text-muted small fw-bold mb-1">SELESAI</p>
+                <h4 class="fw-bold m-0"><?= $pesanan_selesai ?></h4>
+            </div>
+        </div>
+    </div>
+
+    <!-- RECENT ORDERS -->
+    <div class="card-order">
+        <div class="card-header bg-white py-3 border-0">
+            <h5 class="m-0 fw-bold">Riwayat Pesanan</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>ID Pesanan</th>
+                        <th>Tanggal</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php 
+                    $q_pes = mysqli_query($conn, "SELECT * FROM pesanan WHERE id_user = '$id_user' ORDER BY id_pesanan DESC");
+                    if(mysqli_num_rows($q_pes) > 0):
+                        while($r = mysqli_fetch_assoc($q_pes)):
+                    ?>
+                    <tr>
+                        <td class="fw-bold text-primary">#ORD-<?= $r['id_pesanan'] ?></td>
+                        <td class="text-muted small"><?= date('d M Y', strtotime($r['tanggal_pesanan'])) ?></td>
+                        <td class="fw-bold">Rp<?= number_format($r['total_harga'], 0, ',', '.') ?></td>
+                        <td>
+                            <?php 
+                                $badge = 'bg-warning';
+                                if($r['status_pesanan'] == 'Selesai') $badge = 'bg-success';
+                                if($r['status_pesanan'] == 'Dibatalkan') $badge = 'bg-danger';
+                            ?>
+                            <span class="badge rounded-pill <?= $badge ?> px-3"><?= $r['status_pesanan'] ?></span>
+                        </td>
+                        <td class="text-center">
+                            <a href="pesanan-detail.php?id=<?= $r['id_pesanan'] ?>" class="btn btn-light btn-sm rounded-pill border px-3">
+                                Detail
+                            </a>
+                        </td>
+                    </tr>
+                    <?php 
+                        endwhile; 
+                    else:
+                    ?>
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <img src="https://illustrations.popsy.co/blue/shopping-cart.svg" width="120" class="mb-3 opacity-50">
+                            <p class="text-muted">Kamu belum memiliki pesanan.</p>
+                            <a href="index.php" class="btn btn-primary btn-custom btn-sm">Mulai Belanja</a>
+                        </td>
+                    </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
