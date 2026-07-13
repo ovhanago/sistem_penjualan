@@ -1,8 +1,24 @@
 <?php
-session_start();
-require_once "config/koneksi.php";
-?>
+// Tampilkan semua error (untuk debugging di Railway)
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
+session_start();
+
+require_once "config/koneksi.php";
+
+// Cek koneksi database
+if (!$conn) {
+    die("Koneksi database gagal: " . mysqli_connect_error());
+}
+
+// Cek apakah tabel produk ada
+$cek = mysqli_query($conn, "SELECT 1 FROM produk LIMIT 1");
+
+if (!$cek) {
+    die("Error tabel produk: " . mysqli_error($conn));
+}
+?>
 <!DOCTYPE html>
 <html>
 <head>
