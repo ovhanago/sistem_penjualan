@@ -1,9 +1,9 @@
 <?php
-$host = "hayabusa.proxy.rlwy.net";
+$host = "tokaido.proxy.rlwy.net";
 $user = "root";
-$pass = "DMvXGKbzVCmxKrQOeXClGKMckpscCgAY";
+$pass = "dozzTICemZamDMVwHRACFmtcpxThDAFd";
 $db   = "railway";
-$port = 15624;
+$port = 54520;
 
 date_default_timezone_set('Asia/Jakarta');
 
