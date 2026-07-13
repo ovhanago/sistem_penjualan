@@ -7,9 +7,9 @@ date_default_timezone_set('Asia/Jakarta');
 
 $host = "tokaido.proxy.rlwy.net";
 $user = "root";
-$pass = "dozzTICemZamDMVwHRACFmtcpxThDAFd";
+$pass = "wRiOqNUxFhoIsERWsTpMBgXwpzplMncn";
 $db   = "railway";
-$port = 54520;
+$port = 56390;
 
 $conn = mysqli_connect($host, $user, $pass, $db, $port);
 
