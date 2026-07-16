@@ -87,80 +87,13 @@ if ($filter != 'all') {
         .stat-card { border-radius: 12px; border: 1px solid #edf2f7; transition: transform 0.2s; }
         .stat-card:hover { transform: translateY(-5px); }
         
-       @media print {
-
-    @page {
-        margin: 10mm;
-        size: A4 landscape;
-    }
-
-    body{
-        background:#fff !important;
-        padding:0 !important;
-        margin:0 !important;
-    }
-
-    .container{
-        width:100% !important;
-        max-width:100% !important;
-        margin:0 !important;
-        padding:0 !important;
-    }
-
-    /* Sembunyikan semua komponen yang tidak dicetak */
-    .no-print,
-    .filter-section,
-    .btn-print,
-    .nav-tabs,
-    .back-nav,
-    form,
-    select,
-    button{
-        display:none !important;
-        visibility:hidden !important;
-    }
-
-    /* Hilangkan shadow */
-    .card-report{
-        box-shadow:none !important;
-        border:none !important;
-    }
-
-    /* Status menjadi hitam */
-    .badge-status{
-        background:transparent !important;
-        border:none !important;
-        color:#000 !important;
-        font-weight:bold;
-        padding:0 !important;
-    }
-
-    .bg-success,
-    .bg-danger,
-    .bg-warning,
-    .bg-secondary,
-    .bg-primary,
-    .bg-light{
-        background:transparent !important;
-    }
-
-    .text-white,
-    .text-dark,
-    .text-primary,
-    .text-muted,
-    .text-white-50{
-        color:#000 !important;
-    }
-
-    table{
-        width:100%;
-        border-collapse:collapse;
-    }
-
-    th,td{
-        border:1px solid #000 !important;
-    }
-}
+        @media print {
+            @page { margin: 0; }
+            body { padding: 2cm; background-color: white !important; }
+            .no-print, .nav-tabs, .btn-print, .filter-section, .back-nav { display: none !important; }
+            .card-report { box-shadow: none !important; border: 1px solid #eee !important; padding: 0 !important; }
+            .container { max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
+        }
     </style>
 </head>
 <body>
