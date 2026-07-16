@@ -87,13 +87,17 @@ if ($filter != 'all') {
         .stat-card { border-radius: 12px; border: 1px solid #edf2f7; transition: transform 0.2s; }
         .stat-card:hover { transform: translateY(-5px); }
         
-        @media print {
-            @page { margin: 0; }
-            body { padding: 2cm; background-color: white !important; }
-            .no-print, .nav-tabs, .btn-print, .filter-section, .back-nav { display: none !important; }
-            .card-report { box-shadow: none !important; border: 1px solid #eee !important; padding: 0 !important; }
-            .container { max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
-        }
+@media print {
+
+    .badge,
+    .badge-status {
+        color: #000 !important;
+        background: transparent !important;
+        border: none !important;
+        font-weight: 600;
+    }
+
+}
     </style>
 </head>
 <body>
