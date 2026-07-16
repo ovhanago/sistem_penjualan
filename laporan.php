@@ -193,13 +193,25 @@ if ($filter != 'all') {
                                     <td><?= $row['nama_user'] ?></td>
                                     <td class="fw-bold text-primary">Rp <?= number_format($row['total_harga'], 0, ',', '.') ?></td>
                                     <td>
-                                        <?php 
-                                        $status_class = 'bg-secondary text-white';
-                                        if($row['status_pesanan'] == 'Success' || $row['status_pesanan'] == 'Selesai') $status_class = 'bg-success text-white';
-                                        elseif($row['status_pesanan'] == 'Pending') $status_class = 'bg-warning text-dark';
-                                        elseif($row['status_pesanan'] == 'Failed') $status_class = 'bg-danger text-white';
-                                        ?>
-                                        <span class="badge badge-status <?= $status_class ?>"><?= $row['status_pesanan'] ?></span>
+                                        <?php
+                                            $status_class = '';
+
+                                            if($row['status_pesanan'] == 'Success' || $row['status_pesanan'] == 'Selesai'){
+                                                $status_class = 'bg-success';
+                                            }
+                                            elseif($row['status_pesanan'] == 'Pending'){
+                                                $status_class = 'bg-warning';
+                                            }
+                                            elseif($row['status_pesanan'] == 'Failed' || $row['status_pesanan'] == 'Dibatalkan'){
+                                                $status_class = 'bg-danger';
+                                            }
+                                            else{
+                                                $status_class = 'bg-secondary';
+                                            }
+                                            ?>
+                                       <span class="badge <?= $status_class ?>" style="color:#000 !important;">
+                                            <?= $row['status_pesanan'] ?>
+                                        </span>
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>
