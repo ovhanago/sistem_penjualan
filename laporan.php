@@ -89,7 +89,7 @@ if ($filter != 'all') {
         
         @media print {
             @page { margin: 0; }
-            body { padding: 2cm; background-color: black !important; }
+            body { padding: 2cm; background-color: white !important; }
             .no-print, .nav-tabs, .btn-print, .filter-section, .back-nav { display: none !important; }
             .card-report { box-shadow: none !important; border: 1px solid #eee !important; padding: 0 !important; }
             .container { max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
