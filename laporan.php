@@ -194,10 +194,10 @@ if ($filter != 'all') {
                                     <td class="fw-bold text-primary">Rp <?= number_format($row['total_harga'], 0, ',', '.') ?></td>
                                     <td>
                                         <?php 
-                                       $status_class = 'bg-dark text-white';
-                                        if($row['status_pesanan'] == 'Success' || $row['status_pesanan'] == 'Selesai') $status_class = 'bg-dark text-white';
-                                        elseif($row['status_pesanan'] == 'Pending') $status_class = 'bg-dark text-white';
-                                        elseif($row['status_pesanan'] == 'Failed') $status_class = 'bg-dark text-white';
+                                        $status_class = 'bg-secondary text-white';
+                                        if($row['status_pesanan'] == 'Success' || $row['status_pesanan'] == 'Selesai') $status_class = 'bg-success text-white';
+                                        elseif($row['status_pesanan'] == 'Pending') $status_class = 'bg-warning text-dark';
+                                        elseif($row['status_pesanan'] == 'Failed') $status_class = 'bg-danger text-white';
                                         ?>
                                         <span class="badge badge-status <?= $status_class ?>"><?= $row['status_pesanan'] ?></span>
                                     </td>
