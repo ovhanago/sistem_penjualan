@@ -212,8 +212,9 @@ if ($filter != 'all') {
                                        <span class="badge <?= $status_class ?>" style="color:#000 !important;">
                                             <?= $row['status_pesanan'] ?>
                                         </span>
-                                    </td>
-                                </tr>
+                                                                            <td style="color:#000; font-weight:500;">
+                                            <?= $row['status_pesanan'] ?>
+                                        </td>
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </tbody>
