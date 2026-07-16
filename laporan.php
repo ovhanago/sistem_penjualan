@@ -88,12 +88,26 @@ if ($filter != 'all') {
         .stat-card:hover { transform: translateY(-5px); }
         
         @media print {
-            @page { margin: 0; }
-            body { padding: 2cm; background-color: white !important; }
-            .no-print, .nav-tabs, .btn-print, .filter-section, .back-nav { display: none !important; }
-            .card-report { box-shadow: none !important; border: 1px solid #eee !important; padding: 0 !important; }
-            .container { max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
-        }
+
+    .badge-status{
+        color:#000 !important;
+        background:none !important;
+        border:none !important;
+        font-weight:bold;
+    }
+
+    .bg-success,
+    .bg-danger,
+    .bg-warning,
+    .bg-secondary{
+        background:transparent !important;
+    }
+
+    .text-white,
+    .text-dark{
+        color:#000 !important;
+    }
+}
     </style>
 </head>
 <body>
