@@ -267,9 +267,9 @@ if ($filter != 'all') {
                                         $stok_status = $row['jumlah_produk'] > 0 ? 'Tersedia' : 'Habis';
                                         $stok_badge = $row['jumlah_produk'] > 0 ? 'bg-success' : 'bg-danger';
                                         ?>
-                                        <span class="badge badge-status <?= $stok_badge ?> text-white">
-                                            <?= $stok_status ?>
-                                        </span>
+                                        <td style="color:#000; font-weight:500;">
+                                        <?= $stok_status ?>
+                                    </td>
                                     </td>
                                 </tr>
                                 <?php endwhile; ?>
