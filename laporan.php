@@ -193,18 +193,13 @@ if ($filter != 'all') {
                                     <td><?= $row['nama_user'] ?></td>
                                     <td class="fw-bold text-primary">Rp <?= number_format($row['total_harga'], 0, ',', '.') ?></td>
                                     <td>
-                                        <?php
-                                            $status_class = 'bg-secondary text-white';
-                                                if($row['status_pesanan'] == 'Success' || $row['status_pesanan'] == 'Selesai')
-                                                    $status_class = 'bg-success text-white';
-                                                elseif($row['status_pesanan'] == 'Pending')
-                                                    $status_class = 'bg-warning text-dark';
-                                                elseif($row['status_pesanan'] == 'Failed')
-                                                    $status_class = 'bg-danger text-white';
-                                            ?>
-                                       <span class="badge <?= $status_class ?>" style="color:#000 !important;">
-                                            <?= $row['status_pesanan'] ?>
-                                        </span>
+                                        <?php 
+                                        $status_class = 'bg-secondary text-white';
+                                        if($row['status_pesanan'] == 'Success' || $row['status_pesanan'] == 'Selesai') $status_class = 'bg-success text-white';
+                                        elseif($row['status_pesanan'] == 'Pending') $status_class = 'bg-warning text-dark';
+                                        elseif($row['status_pesanan'] == 'Failed') $status_class = 'bg-danger text-white';
+                                        ?>
+                                        <span class="badge badge-status <?= $status_class ?>"><?= $row['status_pesanan'] ?></span>
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>
@@ -267,9 +262,9 @@ if ($filter != 'all') {
                                         $stok_status = $row['jumlah_produk'] > 0 ? 'Tersedia' : 'Habis';
                                         $stok_badge = $row['jumlah_produk'] > 0 ? 'bg-success' : 'bg-danger';
                                         ?>
-                                        <td style="color:#000; font-weight:500;">
-                                        <?= $stok_status ?>
-                                    </td>
+                                        <span class="badge badge-status <?= $stok_badge ?> text-white">
+                                            <?= $stok_status ?>
+                                        </span>
                                     </td>
                                 </tr>
                                 <?php endwhile; ?>
